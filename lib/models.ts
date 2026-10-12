@@ -219,12 +219,44 @@ export function buildVideoRequest(p: VideoParams): { endpoint: Endpoint; input: 
 
 // ---------- Motion Control ----------
 
-export const MOTION_MODELS: { endpoint: Endpoint; label: string }[] = [
-  { endpoint: ENDPOINTS.klingMotionV3Std, label: "Kling 3.0 Motion Control" },
-  { endpoint: ENDPOINTS.klingMotionV3Pro, label: "Kling 3.0 Motion Control Pro" },
-  { endpoint: ENDPOINTS.klingMotion26Std, label: "Kling 2.6 Motion Control" },
-  { endpoint: ENDPOINTS.klingMotion26Pro, label: "Kling 2.6 Motion Control Pro" },
+export const RESOLUTIONS = ["480p", "720p", "1080p"] as const;
+export type Resolution = (typeof RESOLUTIONS)[number];
+
+export type MotionModel = {
+  key: string;
+  label: string;
+  /** Kling não tem parâmetro de resolução: a qualidade é a variante (Standard = 720p, Pro = 1080p). */
+  endpoints: Partial<Record<Resolution, Endpoint>>;
+  kling: boolean; // aceita character_orientation e keep_original_sound
+  minSeconds: number;
+};
+
+export const MOTION_MODELS: MotionModel[] = [
+  {
+    key: "genjutsu",
+    label: "Genjutsu Motion Transfer",
+    endpoints: { "480p": ENDPOINTS.genjutsuMotion, "720p": ENDPOINTS.genjutsuMotion, "1080p": ENDPOINTS.genjutsuMotion },
+    kling: false,
+    minSeconds: 4,
+  },
+  {
+    key: "kling3",
+    label: "Kling 3.0 Motion Control",
+    endpoints: { "720p": ENDPOINTS.klingMotionV3Std, "1080p": ENDPOINTS.klingMotionV3Pro },
+    kling: true,
+    minSeconds: 3,
+  },
+  {
+    key: "kling26",
+    label: "Kling 2.6 Motion Control",
+    endpoints: { "720p": ENDPOINTS.klingMotion26Std, "1080p": ENDPOINTS.klingMotion26Pro },
+    kling: true,
+    minSeconds: 3,
+  },
 ];
+
+/** Conversão usada pelo /estimate da Higgsfield (constante em todos os modelos). */
+export const CREDITS_PER_USD = 16;
 
 // ---------- Status ----------
 

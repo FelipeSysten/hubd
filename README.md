@@ -9,7 +9,7 @@ Estúdio de criação de imagens e vídeos com IA sobre a API Higgsfield. Next.j
 | Explorar | Feed das suas criações e atalhos |
 | Imagem | Soul, Soul 2.0, Soul Cinema, Z-Image Turbo, Grok Image 2.0 (106 estilos Soul via API) |
 | Vídeo | Seedance 2.5 e Kling 3.0 / 3.0 Pro (texto→vídeo e imagem→vídeo com frame final) |
-| Motion | Kling 3.0 e 2.6 Motion Control (Standard/Pro) |
+| Motion | Genjutsu Motion Transfer (480p/720p/1080p, custo exato pela duração do vídeo) e Kling 3.0 / 2.6 Motion Control (720p = Standard, 1080p = Pro) |
 | Canvas | Fluxo em nós: Soul → Seedance (imagem→vídeo, versão 9:16, extensão, edição); o agente monta o fluxo a partir do pedido |
 | Avatar | Retrato Soul (ou sua foto) + Seedance 2.5 imagem→vídeo com fala e áudio nativos |
 | Genjutsu | Transferência de movimento, troca de objeto, Restyle (20 estilos via API) e efeitos por edição Seedance |

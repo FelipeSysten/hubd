@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
-import { CostEstimate, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Segmented, UploadBox } from "@/components/ui";
+import { CostEstimate, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Segmented, UploadBox, useVideoDuration } from "@/components/ui";
 import { api } from "@/lib/client";
 import { ENDPOINTS, type Endpoint } from "@/lib/models";
 
@@ -123,6 +123,9 @@ export default function GenjutsuPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [localSeconds, setLocalSeconds] = useState<number | null>(null);
+  const remoteSeconds = useVideoDuration(video);
+  const seconds = localSeconds ?? remoteSeconds;
 
   useEffect(() => {
     api<Preset[]>("/api/catalog/restyle-presets").then(setPresets).catch(() => setPresets([]));
@@ -211,7 +214,7 @@ export default function GenjutsuPage() {
       <div className="split wide-left">
         <aside className="panel sticky">
           <Field label="Vídeo de origem">
-            <UploadBox kind="video" value={video} onChange={setVideo} label="Enviar vídeo" hint="MP4 de 4 a 30 s" height={150} />
+            <UploadBox kind="video" value={video} onChange={setVideo} onDuration={setLocalSeconds} label="Enviar vídeo" hint="MP4 de 4 a 30 s" height={150} />
           </Field>
 
           <div className="card col" style={{ padding: 14, gap: 10 }}>
@@ -249,7 +252,7 @@ export default function GenjutsuPage() {
           </div>
 
           <ErrorNote error={error} />
-          <GenerateBar label="Aplicar efeito" busy={busy} onClick={generate} cost={<CostEstimate endpoint={effect.endpoint} input={video ? buildInput(video) : null} />} />
+          <GenerateBar label="Aplicar efeito" busy={busy} onClick={generate} cost={<CostEstimate endpoint={effect.endpoint} input={video ? buildInput(video) : null} seconds={seconds} resolution={resolution} waiting="envie o vídeo para ver o custo" />} />
         </aside>
 
         <section className="col" style={{ gap: 18 }}>

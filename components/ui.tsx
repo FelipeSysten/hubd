@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { downloadUrl, formatCredits, post, timeAgo, uploadFile } from "@/lib/client";
-import { ENDPOINT_LABELS, MODULE_LABELS, STATUS_LABELS, TERMINAL, type Endpoint, type RequestStatus } from "@/lib/models";
+import { CREDITS_PER_USD, ENDPOINT_LABELS, MODULE_LABELS, STATUS_LABELS, TERMINAL, type Endpoint, type RequestStatus } from "@/lib/models";
 import { failureMessage, useJobs, type Job } from "./JobsProvider";
 
 export function Field({ label, children, aside }: { label: string; children: React.ReactNode; aside?: React.ReactNode }) {
@@ -23,19 +23,33 @@ export function Segmented<T extends string | number>({
   value,
   onChange,
   format = String,
+  disabled,
 }: {
   options: readonly T[];
   value: T;
   onChange: (v: T) => void;
   format?: (v: T) => string;
+  disabled?: (v: T) => string | false; // retorna o motivo para desabilitar a opção
 }) {
   return (
     <div className="seg" role="radiogroup">
-      {options.map((o) => (
-        <button key={String(o)} type="button" role="radio" aria-checked={o === value} className={o === value ? "on" : ""} onClick={() => onChange(o)}>
-          {format(o)}
-        </button>
-      ))}
+      {options.map((o) => {
+        const reason = disabled?.(o);
+        return (
+          <button
+            key={String(o)}
+            type="button"
+            role="radio"
+            aria-checked={o === value}
+            className={o === value ? "on" : ""}
+            disabled={!!reason}
+            title={reason || undefined}
+            onClick={() => onChange(o)}
+          >
+            {format(o)}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -84,6 +98,7 @@ export function UploadBox({
   label,
   hint,
   height = 120,
+  onDuration,
 }: {
   kind: UploadKind;
   value: string | null;
@@ -91,6 +106,8 @@ export function UploadBox({
   label: string;
   hint?: string;
   height?: number;
+  /** Vídeo: duração lida do arquivo local, antes mesmo de o upload terminar. */
+  onDuration?: (seconds: number | null) => void;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,6 +118,7 @@ export function UploadBox({
     if (!file) return;
     setError(null);
     setBusy(true);
+    if (kind === "video" && onDuration) localDuration(file).then(onDuration);
     try {
       onChange(await uploadFile(file));
     } catch (e) {
@@ -144,6 +162,7 @@ export function UploadBox({
               onClick={(e) => {
                 e.stopPropagation();
                 onChange(null);
+                onDuration?.(null);
               }}
             >
               ×
@@ -165,20 +184,41 @@ export function UploadBox({
   );
 }
 
-/** Estimativa de custo via /estimate (não cobra). */
-export function CostEstimate({ endpoint, input, times = 1 }: { endpoint: Endpoint | null; input: Record<string, unknown> | null; times?: number }) {
-  const [state, setState] = useState<{ credits: number | null; description?: string | null } | null>(null);
+type EstimateState = { credits: number | null; usd?: number; description?: string | null; rates?: Record<string, number> | null };
+
+/**
+ * Estimativa de custo via /estimate (não cobra).
+ * Modelos cobrados por segundo de vídeo de entrada (Genjutsu) devolvem `rates`; com `seconds` e `resolution`
+ * o custo é calculado aqui (a Higgsfield arredonda a duração para cima).
+ */
+export function CostEstimate({
+  endpoint,
+  input,
+  times = 1,
+  seconds,
+  resolution,
+  waiting = "custo após enviar",
+}: {
+  endpoint: Endpoint | null;
+  input: Record<string, unknown> | null;
+  times?: number;
+  seconds?: number | null;
+  resolution?: string;
+  waiting?: string;
+}) {
+  const [state, setState] = useState<EstimateState | null>(null);
   const [loading, setLoading] = useState(false);
   const key = JSON.stringify([endpoint, input]);
 
   useEffect(() => {
     if (!endpoint || !input) {
       setState(null);
+      setLoading(false);
       return;
     }
     setLoading(true);
     const t = setTimeout(() => {
-      post<{ credits: number | null; description?: string | null }>("/api/estimate", { endpoint, input })
+      post<EstimateState>("/api/estimate", { endpoint, input })
         .then(setState)
         .catch(() => setState(null))
         .finally(() => setLoading(false));
@@ -187,16 +227,62 @@ export function CostEstimate({ endpoint, input, times = 1 }: { endpoint: Endpoin
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  if (loading && !state) return <span className="muted small">calculando custo…</span>;
-  if (!state) return <span className="muted small">custo após enviar</span>;
+  if (loading) return <span className="muted small">calculando custo…</span>;
+  if (!state) return <span className="muted small">{waiting}</span>;
   if (state.credits != null) {
     return <span className="muted">≈ {formatCredits(state.credits * times)} créditos</span>;
+  }
+  const rate = resolution ? state.rates?.[resolution] : undefined;
+  if (rate != null) {
+    if (!seconds) return <span className="muted small">lendo a duração do vídeo…</span>;
+    const billed = Math.ceil(seconds);
+    const usd = billed * rate * times;
+    return (
+      <span className="muted" title={`${billed} s × US$ ${rate.toFixed(3)}/s em ${resolution}. ${state.description ?? ""}`} style={{ cursor: "help" }}>
+        ≈ {formatCredits(usd * CREDITS_PER_USD)} créditos <span className="small">(US$ {usd.toFixed(2).replace(".", ",")})</span>
+      </span>
+    );
   }
   return (
     <span className="muted small" title={state.description ?? undefined} style={{ cursor: "help", textDecoration: "underline dotted" }}>
       cobrado por segundo gerado
     </span>
   );
+}
+
+function localDuration(file: File): Promise<number | null> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    const done = (d: number | null) => {
+      URL.revokeObjectURL(url);
+      resolve(d);
+    };
+    v.onloadedmetadata = () => done(Number.isFinite(v.duration) ? v.duration : null);
+    v.onerror = () => done(null);
+    v.src = url;
+  });
+}
+
+/** Lê a duração (em segundos) de um vídeo por URL, sem baixar o arquivo inteiro. */
+export function useVideoDuration(url: string | null): number | null {
+  const [duration, setDuration] = useState<number | null>(null);
+  useEffect(() => {
+    setDuration(null);
+    if (!url) return;
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    v.muted = true;
+    v.onloadedmetadata = () => setDuration(Number.isFinite(v.duration) ? v.duration : null);
+    v.src = url;
+    return () => {
+      v.onloadedmetadata = null;
+      v.removeAttribute("src");
+      v.load();
+    };
+  }, [url]);
+  return duration;
 }
 
 export function StatusPill({ status }: { status: RequestStatus }) {
