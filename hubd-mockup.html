@@ -1,0 +1,688 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>hubd — Mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>*{margin:0;box-sizing:border-box}body{background:#050505;padding:24px 0}
+.wrap{width:1920px;height:1080px;margin:0 auto 24px;transform-origin:top left}
+section{position:relative;width:1920px;height:1080px;overflow:hidden}
+x-icon{display:inline-block;border-radius:8px;background:currentColor;opacity:.85}
+ul{padding-left:1em}</style></head><body>
+<div class="wrap"><section id="cover" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;background:radial-gradient(circle at 78% 42%, rgba(215,247,91,0.20), rgba(10,11,12,0) 55%)"></div>
+<div style="position:absolute;left:1260px;top:190px;width:400px;height:500px;border-radius:32px;background:linear-gradient(150deg,#6366f1,#ec4899 55%,#f59e0b);transform:rotate(8deg)"></div>
+<div style="position:absolute;left:1140px;top:340px;width:360px;height:460px;border-radius:32px;background:linear-gradient(160deg,#14b8a6,#0f172a);border:1px solid #2a2e33;transform:rotate(-6deg)"></div>
+<p style="font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#8b9096">Mockup de interface · v1</p>
+<div style="display:flex;flex-direction:column;gap:24px;width:960px">
+<h1 style="font-family:'Space Grotesk', sans-serif;font-size:240px;font-weight:700;letter-spacing:-10px;line-height:0.9">hubd<span style="color:#d7f75b">.</span></h1>
+<p style="font-size:44px;line-height:1.25;color:#d9dcd6">Estúdio de criação de imagens e vídeos com IA, num só portal.</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;width:1000px">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Image Generation</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Video Generation</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Motion Control</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Kling Canvas</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Avatar 2.0</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Genjutsu</p>
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;background:#141619">Frame Flow</p>
+<p style="font-size:24px;padding:10px 20px;border-radius:999px;background:#d7f75b;color:#0a0b0c;font-weight:600">Motor: API Higgsfield</p>
+</div>
+
+</section>
+</div><div class="wrap"><section id="estrutura" data-transition="fade" style="background:#0f1113;color:#eceee9;font-family:Inter, sans-serif;padding:112px 128px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:64px;font-weight:600;letter-spacing:-2px;line-height:1.1">Estrutura do portal</h2>
+<p style="font-size:30px;color:#9a9fa5">Oito módulos na barra superior. Todos chamam a API Higgsfield e debitam do mesmo saldo de créditos.</p>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:20px;flex:1">
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Globe" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Explorar</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Feed de criações e atalhos para cada ferramenta.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Star" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Image Generation</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Texto e referência viram imagem, em vários modelos.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Play" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Video Generation</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Prompt ou frame inicial vira vídeo com áudio.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Activity" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Motion Control</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Aplica o movimento de um vídeo a um personagem.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Tool" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Kling Canvas <span style="color:#e9c98a">· Agente</span></h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Fluxos em nós; um agente monta o pipeline.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Users" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Avatar 2.0</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Apresentador falante a partir de foto, roteiro e voz.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Lightning" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Genjutsu</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Efeitos prontos: troca de objeto, transferência de movimento.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;background:#16191c;border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Lightbulb" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<h3 style="font-size:32px;font-weight:700">Frame Flow</h3>
+<p style="font-size:24px;line-height:1.35;color:#9a9fa5">Estilos guiados, como Motion Design, a partir de uma ideia.</p>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="explorar" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<p style="font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#8b9096">Explorar</p>
+<h1 style="font-family:'Space Grotesk', sans-serif;font-size:72px;font-weight:600;letter-spacing:-2px;line-height:1.1">O que vamos criar hoje?</h1>
+<div style="display:flex;align-items:center;gap:16px;padding:12px 12px 12px 28px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<x-icon name="Search" style="color:#8b9096;width:32px;height:32px"></x-icon>
+<p style="font-size:26px;color:#6f747a">Descreva uma imagem ou um vídeo, ou cole um link de referência…</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:12px 20px;border:1px solid #2a2e33;border-radius:12px;background:#1b1e22">Imagem ⌄</p>
+<p style="font-size:24px;font-weight:700;padding:12px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Criar</p>
+</div>
+</div>
+<div style="display:flex;gap:16px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:26px;background:linear-gradient(135deg,#1a1d21,#0d0e10);border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Star" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:28px;font-weight:700">Image Generation</p><p style="font-size:28px;color:#8b9096">→</p></div>
+<p style="font-size:24px;line-height:1.35;color:#8b9096">Texto e referência viram imagem.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:26px;background:linear-gradient(135deg,#1a1d21,#0d0e10);border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Play" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:28px;font-weight:700">Video Generation</p><p style="font-size:28px;color:#8b9096">→</p></div>
+<p style="font-size:24px;line-height:1.35;color:#8b9096">Prompt ou frame inicial vira vídeo.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:26px;background:linear-gradient(135deg,#1a1d21,#0d0e10);border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Activity" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:28px;font-weight:700">Motion Control</p><p style="font-size:28px;color:#8b9096">→</p></div>
+<p style="font-size:24px;line-height:1.35;color:#8b9096">Movimento de um vídeo num personagem.</p>
+</div>
+<div style="flex:1;position:relative;display:flex;flex-direction:column;gap:14px;padding:26px;background:linear-gradient(135deg,#1a1d21,#0d0e10);border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Tool" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:28px;font-weight:700">Kling Canvas</p><p style="font-size:28px;color:#8b9096">→</p></div>
+<p style="font-size:24px;line-height:1.35;color:#8b9096">Fluxos em nós, guiados por agente.</p>
+<p style="position:absolute;right:0px;top:0px;width:120px;font-size:24px;text-align:center;padding:4px 0px;background:#3a3326;color:#e9c98a;border-radius:0px 18px 0px 12px">Agente</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:26px;background:linear-gradient(135deg,#1a1d21,#0d0e10);border:1px solid #2a2e33;border-radius:18px">
+<x-icon name="Users" style="color:#5fe06d;width:40px;height:40px"></x-icon>
+<div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:28px;font-weight:700">Avatar 2.0</p><p style="font-size:28px;color:#8b9096">→</p></div>
+<p style="font-size:24px;line-height:1.35;color:#8b9096">Avatar falante com roteiro e voz.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;flex:1">
+<div style="display:flex;align-items:center;gap:10px">
+<h3 style="font-size:32px;font-weight:600">Em alta na comunidade</h3>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;background:#24282d;color:#f2f3ee">Tudo</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Imagens</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Vídeos</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:16px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(135deg,#f59e0b,#7c2d12)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">▶ Vídeo</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(135deg,#6366f1,#ec4899)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">Imagem</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(135deg,#14b8a6,#0f172a)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">▶ Genjutsu</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(160deg,#84cc16,#14532d)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">Imagem</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(135deg,#f43f5e,#4c1d95)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">▶ Avatar</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:16px;background:linear-gradient(135deg,#0ea5e9,#1e3a8a)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">▶ Frame Flow</p></div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="imagem" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="width:440px;display:flex;flex-direction:column;gap:22px;padding:28px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<h3 style="font-size:32px;font-weight:600">Image Generation</h3>
+<div style="display:flex;flex-direction:column;gap:10px">
+<p style="font-size:24px;color:#8b9096">Modelo</p>
+<div style="display:flex;align-items:center;padding:12px 18px;background:#1b1e22;border:1px solid #2a2e33;border-radius:12px"><p style="font-size:24px;font-weight:600">Higgsfield Soul</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">⌄</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<p style="font-size:24px;color:#8b9096">Proporção</p>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">1:1</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#d7f75b;color:#0a0b0c;font-weight:600">3:4</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">16:9</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">9:16</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<p style="font-size:24px;color:#8b9096">Quantidade</p>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;padding:8px 18px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">1</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">2</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:10px;background:#d7f75b;color:#0a0b0c;font-weight:600">4</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<p style="font-size:24px;color:#8b9096">Estilo</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#d7f75b;color:#0a0b0c;font-weight:600">Realista</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">Editorial</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">Anime</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33;color:#c9ccc6">3D</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:center;padding:24px;border:2px dashed #3a3f45;border-radius:14px"><p style="font-size:24px;color:#8b9096;text-align:center">+ Imagem de referência</p></div>
+<div style="flex:1"></div>
+<p style="font-size:24px;color:#8b9096">Custo estimado: <span style="color:#d7f75b">8 créditos</span></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:center;gap:10px">
+<h3 style="font-size:32px;font-weight:600">Resultados</h3>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;background:#24282d;color:#f2f3ee">Todas</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Favoritas</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;color:#8b9096">Histórico</p>
+</div>
+<div style="display:flex;gap:16px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;padding:14px;border-radius:16px;background:linear-gradient(160deg,#fde68a,#b45309 55%,#1c1917)"><div style="display:flex;gap:8px"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">↓ Baixar</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">▶ Animar</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;padding:14px;border-radius:16px;background:linear-gradient(160deg,#fcd5b5,#9a3412 60%,#292524)"><div style="display:flex;gap:8px"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">↓ Baixar</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">▶ Animar</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;padding:14px;border-radius:16px;border:3px solid #d7f75b;background:linear-gradient(160deg,#e7e5e4,#a16207 55%,#1c1917)"><div style="display:flex;gap:8px"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">↓ Baixar</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:#d7f75b;color:#0a0b0c">▶ Animar</p></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;padding:14px;border-radius:16px;background:linear-gradient(160deg,#fef3c7,#78350f 60%,#0c0a09)"><div style="display:flex;gap:8px"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">↓ Baixar</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">▶ Animar</p></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:18px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<div style="padding:16px 20px;border:2px solid #d7f75b;border-radius:12px;background:#0f1113"><p style="font-size:26px">Retrato editorial de uma ceramista no ateliê, luz suave de janela, filme 35 mm</p></div>
+<div style="display:flex;align-items:center;gap:10px">
+<p style="font-size:28px;width:52px;height:52px;text-align:center;line-height:1.8;border:1px solid #2a2e33;border-radius:12px;color:#8b9096">+</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33">Soul</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33">3:4</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33">4 imagens</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33">Realista</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;font-weight:700;padding:14px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Gerar imagem</p>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="video" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="width:560px;display:flex;flex-direction:column;gap:18px;padding:24px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<h3 style="font-size:32px;font-weight:600">Video Generation</h3>
+<div style="display:flex;gap:4px;padding:4px;background:#0f1113;border-radius:12px">
+<p style="font-size:24px;padding:8px 16px;border-radius:9px;background:#26301a;color:#d7f75b;font-weight:600">Imagem → vídeo</p>
+<p style="font-size:24px;padding:8px 16px;color:#8b9096">Texto → vídeo</p>
+</div>
+<div style="display:flex;gap:12px">
+<div style="flex:1;height:110px;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:12px;background:linear-gradient(160deg,#e7e5e4,#a16207 55%,#1c1917)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Frame inicial ✓</p></div>
+<div style="flex:1;height:110px;display:flex;align-items:center;justify-content:center;border:2px dashed #3a3f45;border-radius:12px"><p style="font-size:24px;color:#8b9096;text-align:center">+ Frame final</p></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;color:#8b9096">Prompt</p>
+<div style="padding:14px 18px;border:2px solid #d7f75b;border-radius:12px;background:#0f1113"><p style="font-size:24px;line-height:1.4">Câmera orbita a ceramista enquanto ela ergue o vaso; poeira dançando na luz.</p></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:24px;color:#8b9096">Modelo</p><div style="display:flex;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px;font-weight:600">Seedance 2.5</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:24px;color:#8b9096">Proporção</p><div style="display:flex;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px;font-weight:600">16:9</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:24px;color:#8b9096">Qualidade</p><div style="display:flex;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px;font-weight:600">720p</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:24px;color:#8b9096">Duração</p><div style="display:flex;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px;font-weight:600">15 segundos</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<p style="font-size:24px;color:#8b9096">Áudio nativo</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;background:#26301a;color:#d7f75b;font-weight:600">Com áudio</p>
+<p style="font-size:24px;padding:8px 16px;border-radius:10px;color:#8b9096">Sem áudio</p>
+</div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:12px">
+<p style="font-size:24px;color:#8b9096">≈ 45 créditos</p>
+<div style="flex:1"></div>
+<p style="font-size:26px;font-weight:700;padding:14px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Gerar vídeo</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:24px;border-radius:20px;background:linear-gradient(150deg,#78350f,#1c1917 55%,#0c0a09)">
+<div style="display:flex;gap:8px"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6)">Prévia · 16:9 · 720p</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.6);color:#d7f75b">♪ com áudio</p></div>
+<p style="font-size:56px;align-self:center;width:128px;height:128px;border-radius:50%;text-align:center;line-height:2.3;background:rgba(215,247,91,0.9);color:#0a0b0c">▶</p>
+<div style="display:flex;align-items:center;gap:16px">
+<p style="font-size:24px">0:06 / 0:15</p>
+<div style="flex:1;display:flex;height:8px;border-radius:4px;background:rgba(255,255,255,0.2)"><div style="width:40%;border-radius:4px;background:#d7f75b"></div></div>
+<p style="font-size:24px">↓ Baixar</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:28px;font-weight:600">Fila de gerações</h3>
+<div style="display:flex;gap:16px">
+<div style="flex:1;display:flex;align-items:center;gap:14px;padding:12px;background:#141619;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:60px;border-radius:8px;background:linear-gradient(150deg,#78350f,#1c1917)"></div><div style="display:flex;flex-direction:column;gap:2px"><p style="font-size:24px">Ceramista · órbita</p><p style="font-size:24px;color:#d7f75b">Gerando… 62%</p></div></div>
+<div style="flex:1;display:flex;align-items:center;gap:14px;padding:12px;background:#141619;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:60px;border-radius:8px;background:linear-gradient(150deg,#0ea5e9,#1e3a8a)"></div><div style="display:flex;flex-direction:column;gap:2px"><p style="font-size:24px">Praia ao amanhecer</p><p style="font-size:24px;color:#5fe06d">Concluído</p></div></div>
+<div style="flex:1;display:flex;align-items:center;gap:14px;padding:12px;background:#141619;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:60px;border-radius:8px;background:#24282d"></div><div style="display:flex;flex-direction:column;gap:2px"><p style="font-size:24px">Logo em 3D</p><p style="font-size:24px;color:#8b9096">Na fila</p></div></div>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="motion" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:56px;font-weight:600;letter-spacing:-2px;line-height:1.1">Motion Control</h2>
+<p style="font-size:26px;color:#8b9096">Envie um personagem e um vídeo de referência: o movimento do vídeo é transferido para ele.</p>
+</div>
+<div style="display:flex;gap:20px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:20px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#8b9096">1 · Personagem</p>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:14px;border-radius:14px;background:linear-gradient(170deg,#fcd5b5,#c2410c 55%,#292524)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">retrato.png</p></div>
+<p style="font-size:24px;color:#8b9096">Corpo inteiro visível dá o melhor resultado.</p>
+</div>
+<p style="font-size:64px;color:#d7f75b;align-self:center">+</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:20px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#8b9096">2 · Vídeo de movimento</p>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;align-items:start;padding:14px;border-radius:14px;background:linear-gradient(170deg,#38bdf8,#312e81 60%,#0f172a)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">▶ 0:08</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">danca.mp4</p></div>
+<p style="font-size:24px;color:#8b9096">Até 30 s, uma pessoa em cena.</p>
+</div>
+<p style="font-size:64px;color:#d7f75b;align-self:center">→</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:20px;background:#141619;border:2px solid #d7f75b;border-radius:20px">
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#d7f75b">Resultado</p>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;align-items:start;padding:14px;border-radius:14px;background:linear-gradient(170deg,#fdba74,#7c3aed 60%,#1e1b4b)"><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:#d7f75b;color:#0a0b0c;font-weight:600">Pronto · 0:08</p><p style="font-size:24px;padding:4px 12px;border-radius:8px;background:rgba(10,11,12,0.65)">▶ Reproduzir</p></div>
+<div style="display:flex;gap:8px"><p style="font-size:24px;padding:6px 14px;border-radius:10px;border:1px solid #2a2e33">↓ Baixar</p><p style="font-size:24px;padding:6px 14px;border-radius:10px;border:1px solid #2a2e33">Upscale</p></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 14px 14px 20px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Modelo ·</span> Kling Motion Control ⌄</p>
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Orientação ·</span> seguir o vídeo ⌄</p>
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Qualidade ·</span> 1080p ⌄</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;color:#8b9096">≈ 60 créditos</p>
+<p style="font-size:26px;font-weight:700;padding:14px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Gerar movimento</p>
+</div>
+
+</section>
+</div><div class="wrap"><section id="canvas" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:10px">
+<h3 style="font-size:30px;font-weight:600">Kling Canvas</h3>
+<p style="font-size:24px;padding:2px 12px;border-radius:8px;background:#3a3326;color:#e9c98a">Agente</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:8px 14px;border-radius:10px;border:1px solid #2a2e33">+ Nó</p>
+<p style="font-size:24px;padding:8px 14px;border-radius:10px;border:1px solid #2a2e33;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:8px 14px;border-radius:10px;border:1px solid #2a2e33;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:8px 14px;border-radius:10px;border:1px solid #2a2e33;color:#8b9096">Upscale</p>
+<p style="font-size:24px;font-weight:700;padding:8px 20px;border-radius:10px;background:#d7f75b;color:#0a0b0c">▶ Executar fluxo</p>
+</div>
+<div style="position:relative;width:1320px;height:800px;border:1px solid #2a2e33;border-radius:20px;background:repeating-linear-gradient(90deg,#111315 0px,#111315 47px,#1a1d20 47px,#1a1d20 48px)">
+<x-connector x1="312" y1="200" x2="352" y2="200" head="end" style="color:#5f656c;border-width:3px"></x-connector>
+<x-connector x1="632" y1="200" x2="672" y2="200" head="end" style="color:#5f656c;border-width:3px"></x-connector>
+<x-connector x1="952" y1="200" x2="992" y2="200" head="end" style="color:#5f656c;border-width:3px"></x-connector>
+<x-connector x1="812" y1="372" x2="812" y2="470" head="end" style="color:#d7f75b;border-width:3px"></x-connector>
+<div style="position:absolute;left:32px;top:112px;width:280px;display:flex;flex-direction:column;gap:10px;padding:18px;background:#16191c;border:1px solid #33383e;border-radius:16px">
+<p style="font-size:24px;letter-spacing:2px;color:#d7f75b">PROMPT</p>
+<p style="font-size:24px;line-height:1.35">Tênis branco flutuando em estúdio, luz suave, fundo creme</p>
+</div>
+<div style="position:absolute;left:352px;top:60px;width:280px;display:flex;flex-direction:column;gap:10px;padding:18px;background:#16191c;border:1px solid #33383e;border-radius:16px">
+<p style="font-size:24px;letter-spacing:2px;color:#5fe06d">IMAGEM</p>
+<div style="height:150px;border-radius:10px;background:linear-gradient(150deg,#fef3c7,#d6d3d1 50%,#78716c)"></div>
+<p style="font-size:24px;color:#8b9096">Soul · 4 variações</p>
+</div>
+<div style="position:absolute;left:672px;top:60px;width:280px;display:flex;flex-direction:column;gap:10px;padding:18px;background:#16191c;border:2px solid #d7f75b;border-radius:16px">
+<p style="font-size:24px;letter-spacing:2px;color:#5fe06d">VÍDEO</p>
+<div style="height:150px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(150deg,#fde68a,#a8a29e 50%,#44403c)"><p style="font-size:40px;color:#0a0b0c">▶</p></div>
+<p style="font-size:24px;color:#8b9096">Seedance 2.5 · 8 s</p>
+</div>
+<div style="position:absolute;left:992px;top:60px;width:280px;display:flex;flex-direction:column;gap:10px;padding:18px;background:#16191c;border:1px solid #33383e;border-radius:16px">
+<p style="font-size:24px;letter-spacing:2px;color:#5fe06d">UPSCALE</p>
+<p style="font-size:24px">4K · 60 fps</p>
+<p style="font-size:24px;color:#8b9096">◷ Na fila</p>
+</div>
+<div style="position:absolute;left:672px;top:470px;width:280px;display:flex;flex-direction:column;gap:10px;padding:18px;background:#16191c;border:1px solid #33383e;border-radius:16px">
+<p style="font-size:24px;letter-spacing:2px;color:#5fe06d">REFRAME</p>
+<p style="font-size:24px">9:16 para Reels</p>
+<p style="font-size:24px;color:#8b9096">◷ Aguardando vídeo</p>
+</div>
+<p style="position:absolute;left:32px;bottom:24px;width:900px;font-size:24px;color:#6f747a">Arraste nós, conecte saídas a entradas ou peça ao agente para montar o fluxo.</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:22px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<div style="display:flex;align-items:center;gap:12px">
+<x-icon name="Chat" style="color:#d7f75b;width:36px;height:36px"></x-icon>
+<h3 style="font-size:30px;font-weight:600">Agente</h3>
+</div>
+<div style="align-self:end;width:380px;padding:14px 18px;border-radius:16px;background:#24282d"><p style="font-size:24px;line-height:1.4">Crie um anúncio de 8 s do tênis, com versão vertical.</p></div>
+<div style="width:400px;display:flex;flex-direction:column;gap:10px;padding:14px 18px;border-radius:16px;background:#1b1e22;border:1px solid #2a2e33">
+<p style="font-size:24px;line-height:1.4">Montei o fluxo: prompt → imagem → vídeo → upscale, mais um reframe 9:16.</p>
+<p style="font-size:24px;color:#8b9096">Custo estimado: ≈ 72 créditos.</p>
+</div>
+<div style="display:flex;gap:10px">
+<p style="font-size:24px;font-weight:700;padding:8px 18px;border-radius:10px;background:#d7f75b;color:#0a0b0c">▶ Executar</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:10px;border:1px solid #2a2e33">Ajustar</p>
+</div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:10px;padding:12px 12px 12px 18px;border:1px solid #2a2e33;border-radius:14px;background:#0f1113">
+<p style="font-size:24px;color:#6f747a">Peça uma alteração…</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;font-weight:700;width:48px;height:48px;border-radius:50%;text-align:center;line-height:2;background:#d7f75b;color:#0a0b0c">↑</p>
+</div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="avatar" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:52px;font-weight:600;letter-spacing:-2px;line-height:1.1">Avatar 2.0</h2>
+<p style="font-size:26px;color:#8b9096">Foto, roteiro e voz viram um apresentador falando em vídeo.</p>
+</div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#8b9096">1 · Avatar</p>
+<div style="display:flex;gap:14px;height:170px">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:14px;border:3px solid #d7f75b;background:linear-gradient(170deg,#fcd5b5,#b45309 60%,#292524)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Ana</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:14px;background:linear-gradient(170deg,#d6d3d1,#57534e 60%,#1c1917)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Léo</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:14px;background:linear-gradient(170deg,#fbcfe8,#9d174d 60%,#1f0a14)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Bia</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:14px;background:linear-gradient(170deg,#bae6fd,#0369a1 60%,#0c1a2a)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Rafa</p></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:end;align-items:start;padding:10px;border-radius:14px;background:linear-gradient(170deg,#d9f99d,#3f6212 60%,#111a06)"><p style="font-size:24px;padding:2px 10px;border-radius:6px;background:rgba(10,11,12,0.65)">Iara</p></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;border:2px dashed #3a3f45;border-radius:14px"><p style="font-size:24px;color:#8b9096;text-align:center">+ Sua foto</p></div>
+</div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#8b9096">2 · Roteiro</p>
+<div style="display:flex;flex-direction:column;gap:12px;padding:18px 20px;border:2px solid #d7f75b;border-radius:14px;background:#0f1113">
+<p style="font-size:26px;line-height:1.4">Oi! Eu sou a Ana, e hoje vou mostrar como o hubd transforma uma ideia em vídeo em menos de um minuto.</p>
+<div style="display:flex;align-items:center"><p style="font-size:24px;color:#6f747a">104 / 1.500 caracteres</p><div style="flex:1"></div><p style="font-size:24px;color:#d7f75b">✦ Melhorar com IA</p></div>
+</div>
+<p style="font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#8b9096">3 · Voz e formato</p>
+<div style="display:flex;align-items:center;gap:12px">
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Voz ·</span> Ana ⌄</p>
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Idioma ·</span> PT-BR ⌄</p>
+<p style="font-size:24px;padding:10px 16px;border-radius:10px;background:#1b1e22;border:1px solid #2a2e33"><span style="color:#8b9096">Legendas ·</span> Ativadas</p>
+<div style="flex:1"></div>
+<p style="font-size:26px;font-weight:700;padding:14px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Gerar avatar</p>
+</div>
+</div>
+<div style="width:500px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-size:24px;color:#8b9096">Prévia · 9:16 · ≈ 30 créditos</p>
+<div style="width:460px;flex:1;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:24px;border-radius:28px;border:1px solid #2a2e33;background:linear-gradient(175deg,#fcd5b5,#b45309 45%,#1c1917 85%)">
+<p style="font-size:24px;padding:4px 14px;border-radius:999px;background:rgba(10,11,12,0.6)">● Falando · 0:04</p>
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+<p style="font-size:30px;font-weight:700;text-align:center;line-height:1.3;padding:8px 14px;border-radius:10px;background:rgba(10,11,12,0.7)">…transforma uma ideia em vídeo</p>
+<div style="display:flex;width:380px;height:8px;border-radius:4px;background:rgba(255,255,255,0.25)"><div style="width:30%;border-radius:4px;background:#d7f75b"></div></div>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="genjutsu" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;align-items:end;gap:16px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:52px;font-weight:600;letter-spacing:-2px;line-height:1.1">Genjutsu</h2>
+<p style="font-size:26px;color:#8b9096">Efeitos de vídeo prontos: envie sua mídia e escolha o efeito.</p>
+</div>
+<div style="flex:1"></div>
+<p style="font-size:24px;font-weight:600;padding:12px 24px;border-radius:12px;border:2px solid #d7f75b;color:#d7f75b">+ Enviar mídia</p>
+</div>
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;background:#d7f75b;color:#0a0b0c;font-weight:600">Em alta</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;border:1px solid #2a2e33;color:#c9ccc6">Transformação</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;border:1px solid #2a2e33;color:#c9ccc6">Movimento</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;border:1px solid #2a2e33;color:#c9ccc6">Objetos</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;border:1px solid #2a2e33;color:#c9ccc6">Câmera</p>
+<p style="font-size:24px;padding:8px 18px;border-radius:999px;border:1px solid #2a2e33;color:#c9ccc6">Favoritos</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:20px;flex:1">
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;display:flex;flex-direction:column;align-items:start;padding:12px;border-radius:16px;background:linear-gradient(150deg,#f59e0b,#7c2d12)"><p style="font-size:24px;padding:2px 12px;border-radius:8px;background:#d7f75b;color:#0a0b0c;font-weight:600">Em alta</p></div><p style="font-size:26px;font-weight:700">Transferência de movimento</p><p style="font-size:24px;color:#8b9096">Personagem copia um vídeo</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;display:flex;flex-direction:column;align-items:start;padding:12px;border-radius:16px;background:linear-gradient(150deg,#6366f1,#ec4899)"><p style="font-size:24px;padding:2px 12px;border-radius:8px;background:#d7f75b;color:#0a0b0c;font-weight:600">Em alta</p></div><p style="font-size:26px;font-weight:700">Substituir objeto</p><p style="font-size:24px;color:#8b9096">Troca um item da cena</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:linear-gradient(150deg,#14b8a6,#0f172a)"></div><p style="font-size:26px;font-weight:700">Bullet time</p><p style="font-size:24px;color:#8b9096">A cena congela e a câmera gira</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:linear-gradient(150deg,#f43f5e,#4c1d95)"></div><p style="font-size:26px;font-weight:700">Troca de roupa</p><p style="font-size:24px;color:#8b9096">Novo figurino, mesmo take</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:linear-gradient(150deg,#a8a29e,#1c1917)"></div><p style="font-size:26px;font-weight:700">Dissolver em fumaça</p><p style="font-size:24px;color:#8b9096">Saída dramática de cena</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:radial-gradient(circle at 50% 45%,#c4b5fd,#312e81 55%,#020617)"></div><p style="font-size:26px;font-weight:700">Zoom cósmico</p><p style="font-size:24px;color:#8b9096">Do rosto até o espaço</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:linear-gradient(150deg,#84cc16,#14532d)"></div><p style="font-size:26px;font-weight:700">Virar desenho</p><p style="font-size:24px;color:#8b9096">Estilo animado no vídeo</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><div style="flex:1;border-radius:16px;background:linear-gradient(150deg,#0ea5e9,#1e3a8a)"></div><p style="font-size:26px;font-weight:700">Explosão de partículas</p><p style="font-size:24px;color:#8b9096">Transição com estilhaços</p></div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="frameflow" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;border-radius:12px;background:#24282d;color:#f2f3ee;font-weight:600">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#1b1e22;border:1px solid #2a2e33;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;flex:1">
+<div style="width:260px;display:flex;flex-direction:column;gap:6px;padding:18px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<p style="font-size:24px;letter-spacing:3px;color:#8b9096;padding:4px 8px">ESTILOS</p>
+<p style="font-size:24px;padding:10px 14px;border-radius:10px;background:#24282d;color:#d7f75b;font-weight:600">Motion Design</p>
+<p style="font-size:24px;padding:10px 14px;color:#c9ccc6">Cinemático</p>
+<p style="font-size:24px;padding:10px 14px;color:#c9ccc6">UGC / Selfie</p>
+<p style="font-size:24px;padding:10px 14px;color:#c9ccc6">Produto 360°</p>
+<p style="font-size:24px;padding:10px 14px;color:#c9ccc6">Anime</p>
+<p style="font-size:24px;padding:10px 14px;color:#c9ccc6">Documental</p>
+<div style="flex:1"></div>
+<p style="font-size:24px;padding:10px 14px;color:#8b9096">+ Novo estilo</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<p style="font-size:24px;letter-spacing:5px;color:#8b9096">FRAME FLOW</p>
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:56px;font-weight:600;letter-spacing:-2px;line-height:1.1">Motion Design</h2>
+<p style="font-size:26px;color:#8b9096">Uma ideia vira direção: objetos 3D, tipografia e som em sintonia.</p>
+<div style="width:1200px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:18px;padding:8px 20px 8px 8px;background:#121417;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:50px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#365314)"></div><p style="font-size:24px;font-weight:500">Apresentar um produto com formas 3D, luz suave e tipografia precisa.</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">→</p></div>
+<div style="display:flex;align-items:center;gap:18px;padding:8px 20px 8px 8px;background:#121417;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:50px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#a855f7)"></div><p style="font-size:24px;font-weight:500">Transformar uma ideia sobre criatividade em uma sequência de motion.</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">→</p></div>
+<div style="display:flex;align-items:center;gap:18px;padding:8px 20px 8px 8px;background:#121417;border:1px solid #2a2e33;border-radius:14px"><div style="width:96px;height:50px;border-radius:8px;background:linear-gradient(135deg,#14b8a6,#164e63)"></div><p style="font-size:24px;font-weight:500">Revelar minha marca com materiais de estúdio e movimentos elegantes.</p><div style="flex:1"></div><p style="font-size:24px;color:#8b9096">→</p></div>
+</div>
+<div style="flex:1"></div>
+<div style="width:1540px;display:flex;flex-direction:column;gap:14px;padding:20px;background:#141619;border:1px solid #2a2e33;border-radius:22px">
+<div style="display:flex;gap:8px">
+<p style="font-size:24px;padding:6px 14px;border-radius:8px;background:#26301a;color:#d7f75b;font-weight:600">Ideia ou referência</p>
+<p style="font-size:24px;padding:6px 14px;color:#8b9096">∿ A partir de áudio</p>
+</div>
+<div style="display:flex;gap:12px">
+<p style="font-size:28px;width:52px;height:52px;text-align:center;line-height:1.8;border:1px solid #2a2e33;border-radius:12px;color:#8b9096">+</p>
+<div style="flex:1;height:96px;padding:14px 18px;border:2px solid #d7f75b;border-radius:10px;background:#0f1113"><p style="font-size:26px;color:#6f747a">Ex.: apresentar um aplicativo que organiza a rotina.</p></div>
+</div>
+<div style="display:flex;align-items:end;gap:12px">
+<div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;font-weight:600">Modelo</p><div style="display:flex;gap:16px;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px">Seedance 2.5</p><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;font-weight:600">Proporção</p><div style="display:flex;gap:16px;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px">Horizontal · 16:9</p><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;font-weight:600">Qualidade</p><div style="display:flex;gap:16px;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px">720p</p><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;font-weight:600">Duração</p><div style="display:flex;gap:16px;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px">15 segundos</p><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><p style="font-size:24px;font-weight:600">Áudio nativo</p><div style="display:flex;gap:16px;padding:10px 14px;background:#1b1e22;border:1px solid #2a2e33;border-radius:10px"><p style="font-size:24px">Com áudio</p><p style="font-size:24px;color:#8b9096">⌄</p></div></div>
+<div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;border:1px solid #2a2e33;border-radius:10px"><x-icon name="Settings" style="color:#8b9096;width:28px;height:28px"></x-icon></div>
+<div style="flex:1"></div>
+<p style="font-size:26px;font-weight:700;padding:12px 32px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Gerar vídeo</p>
+</div>
+<p style="font-size:24px;color:#8b9096">Seedance 2.5 integrado. Seu prompt e o estilo escolhido orientam o vídeo; a geração consome créditos Higgsfield.</p>
+</div>
+<div style="width:1540px;display:flex;align-items:center">
+<p style="font-size:24px;color:#c9ccc6">▸ Status das integrações <span style="color:#5fe06d">● Higgsfield conectada</span></p>
+<div style="flex:1"></div>
+<p style="font-size:24px;color:#8b9096">O que está por trás deste estilo ↗</p>
+</div>
+</div>
+</div>
+
+</section>
+</div><div class="wrap"><section id="conta" data-transition="fade" style="background:#0a0b0c;color:#eceee9;font-family:Inter, sans-serif;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p style="font-family:'Space Grotesk', sans-serif;font-size:44px;font-weight:700;letter-spacing:-2px">hubd<span style="color:#d7f75b">.</span></p>
+<div style="display:flex;gap:4px;padding:6px;background:#141619;border:1px solid #2a2e33;border-radius:16px">
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Explorar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Imagem</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Vídeo</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Motion</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Canvas</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Avatar</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Genjutsu</p>
+<p style="font-size:24px;padding:10px 18px;color:#8b9096">Frame Flow</p>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<p style="font-size:24px;padding:10px 20px;border:1px solid #2a2e33;border-radius:999px;color:#d7f75b">◆ 1.240 créditos</p>
+<p style="font-size:24px;font-weight:600;width:56px;height:56px;border-radius:50%;background:#d7f75b;color:#0a0b0c;text-align:center;line-height:2.25">FS</p>
+</div>
+</div>
+<h2 style="font-family:'Space Grotesk', sans-serif;font-size:52px;font-weight:600;letter-spacing:-2px;line-height:1.1">Conta, créditos e integrações</h2>
+<div style="display:flex;gap:24px;flex:1">
+<div style="width:600px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:14px;padding:28px;border:1px solid #2a2e33;border-radius:20px;background:linear-gradient(150deg,#1d2612,#141619 60%)">
+<p style="font-size:24px;color:#8b9096">Saldo Higgsfield</p>
+<div style="display:flex;align-items:baseline;gap:12px"><p style="font-family:'Space Grotesk', sans-serif;font-size:96px;font-weight:700;letter-spacing:-3px;line-height:1">1.240</p><p style="font-size:28px;color:#8b9096">créditos</p></div>
+<div style="display:flex;height:12px;border-radius:6px;background:#2a2e33"><div style="width:62%;border-radius:6px;background:#d7f75b"></div></div>
+<p style="font-size:24px;color:#8b9096">62% do plano usado · renova em [__/__]</p>
+<div style="display:flex;gap:10px"><p style="font-size:24px;font-weight:700;padding:12px 22px;border-radius:12px;background:#d7f75b;color:#0a0b0c">Comprar créditos</p><p style="font-size:24px;padding:12px 22px;border-radius:12px;border:1px solid #2a2e33">Ver extrato</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:28px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<h3 style="font-size:28px;font-weight:600">Consumo por módulo</h3>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px;width:130px">Vídeo</p><div style="flex:1;display:flex;height:10px;border-radius:5px;background:#24282d"><div style="width:48%;border-radius:5px;background:#d7f75b"></div></div></div>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px;width:130px">Imagem</p><div style="flex:1;display:flex;height:10px;border-radius:5px;background:#24282d"><div style="width:22%;border-radius:5px;background:#d7f75b"></div></div></div>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px;width:130px">Avatar</p><div style="flex:1;display:flex;height:10px;border-radius:5px;background:#24282d"><div style="width:14%;border-radius:5px;background:#d7f75b"></div></div></div>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px;width:130px">Canvas</p><div style="flex:1;display:flex;height:10px;border-radius:5px;background:#24282d"><div style="width:10%;border-radius:5px;background:#d7f75b"></div></div></div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:12px;padding:24px 28px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<h3 style="font-size:28px;font-weight:600">Status das integrações</h3>
+<table style="font-size:24px;color:#c9ccc6">
+<tr><th style="width:26%;color:#8b9096">Serviço</th><th style="width:38%;color:#8b9096">Uso no hubd</th><th style="width:18%;color:#8b9096">Status</th><th style="width:18%;color:#8b9096">Latência</th></tr>
+<tr><td>Higgsfield API</td><td>Autenticação e créditos</td><td style="color:#5fe06d">● Online</td><td>320 ms</td></tr>
+<tr><td>Seedance 2.5</td><td>Vídeo, Frame Flow</td><td style="color:#5fe06d">● Online</td><td>1,8 s</td></tr>
+<tr><td>Kling</td><td>Motion Control, Canvas</td><td style="color:#5fe06d">● Online</td><td>2,1 s</td></tr>
+<tr><td>Higgsfield Soul</td><td>Imagem</td><td style="color:#5fe06d">● Online</td><td>0,9 s</td></tr>
+<tr><td>Avatar 2.0</td><td>Avatar</td><td style="color:#fb923c">● Instável</td><td>4,6 s</td></tr>
+<tr><td>Armazenamento</td><td>Mídias · servidor local</td><td style="color:#5fe06d">● Online</td><td>—</td></tr>
+</table>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:24px 28px;background:#141619;border:1px solid #2a2e33;border-radius:20px">
+<h3 style="font-size:28px;font-weight:600">Fila de gerações</h3>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px">Ceramista · órbita</p><p style="font-size:24px;color:#8b9096">Seedance 2.5</p><div style="flex:1"></div><p style="font-size:24px;padding:4px 14px;border-radius:999px;background:#26301a;color:#d7f75b">Gerando 62%</p></div>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px">Anúncio do tênis</p><p style="font-size:24px;color:#8b9096">Kling Canvas</p><div style="flex:1"></div><p style="font-size:24px;padding:4px 14px;border-radius:999px;background:#24282d;color:#c9ccc6">Na fila</p></div>
+<div style="display:flex;align-items:center;gap:14px"><p style="font-size:24px">Apresentação Ana</p><p style="font-size:24px;color:#8b9096">Avatar 2.0</p><div style="flex:1"></div><p style="font-size:24px;padding:4px 14px;border-radius:999px;background:#3a2414;color:#fb923c">Falhou · reembolsado</p></div>
+</div>
+</div>
+</div>
+
+</section>
+</div>
+<script>function f(){const s=Math.min(1,(innerWidth-32)/1920);document.querySelectorAll('.wrap').forEach(w=>{w.style.transform='scale('+s+')';w.style.height=1080*s+'px';w.style.width=1920*s+'px';w.style.overflow='visible'})}addEventListener('resize',f);f()</script>
+</body></html>
