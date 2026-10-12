@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useJobs, type Job } from "@/components/JobsProvider";
+import { useSyncedState } from "@/components/useSyncedState";
 import { ErrorNote, Field, QueueList, Segmented, Select, StatusPill, UploadBox } from "@/components/ui";
 import { downloadUrl } from "@/lib/client";
 import { ENDPOINTS, TERMINAL } from "@/lib/models";
@@ -27,7 +28,7 @@ const VOICE_PROMPT: Record<(typeof VOICES)[number], string | null> = {
 const LANGS = { "PT-BR": "Brazilian Portuguese", EN: "English", ES: "Spanish" } as const;
 type Lang = keyof typeof LANGS;
 const FORMATS = ["9:16", "16:9", "1:1"] as const;
-const PORTRAITS_KEY = "hubd.avatar.portraits.v1";
+const LEGACY_PORTRAITS_KEY = "hubd.avatar.portraits.v1";
 const MAX_CHARS = 1500;
 
 /** ~2,4 palavras por segundo de fala, mais uma folga; limitado ao intervalo do Seedance (4–30 s). */
@@ -55,7 +56,7 @@ export default function AvatarPage() {
   const { jobs, run, submit } = useJobs();
   const [persona, setPersona] = useState<Persona | null>(PERSONAS[0]);
   const [photo, setPhoto] = useState<string | null>(null);
-  const [portraits, setPortraits] = useState<Record<string, string>>({});
+  const [portraits, setPortraits] = useSyncedState<Record<string, string>>("avatar-portraits", {}, LEGACY_PORTRAITS_KEY);
   const [script, setScript] = useState("Oi! Eu sou a Ana, e hoje vou mostrar como o hubd transforma uma ideia em vídeo em menos de um minuto.");
   const [voice, setVoice] = useState<(typeof VOICES)[number]>("Voz da persona");
   const [lang, setLang] = useState<Lang>("PT-BR");
@@ -65,22 +66,8 @@ export default function AvatarPage() {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      setPortraits(JSON.parse(localStorage.getItem(PORTRAITS_KEY) ?? "{}"));
-    } catch {
-      // sem cache de retratos
-    }
-  }, []);
-
   const savePortrait = (key: string, url: string) => {
-    const next = { ...portraits, [key]: url };
-    setPortraits(next);
-    try {
-      localStorage.setItem(PORTRAITS_KEY, JSON.stringify(next));
-    } catch {
-      // storage indisponível
-    }
+    setPortraits((prev) => ({ ...prev, [key]: url }));
   };
 
   const seconds = speechSeconds(script);

@@ -1,5 +1,6 @@
 import { ENDPOINTS } from "@/lib/models";
 import { hfFetch } from "@/lib/hf";
+import { listJobs, storageKind } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export async function GET() {
     return Response.json({ configured: false, checks: [] });
   }
   const checks = await Promise.all([
+    historyCheck(),
     timed("Higgsfield API", "Autenticação e fila", () => hfFetch("/requests/00000000-0000-4000-8000-000000000000/status"), (s) => s === 404),
     timed("Seedance 2.5", "Vídeo, Frame Flow, Avatar", estimate(ENDPOINTS.seedanceT2V, { prompt: "x" }), (s) => s === 200),
     timed("Kling 3.0", "Vídeo", estimate(ENDPOINTS.klingT2V, { prompt: "x" }), (s) => s === 200),
@@ -38,4 +40,18 @@ export async function GET() {
     ),
   ]);
   return Response.json({ configured: true, checks });
+}
+
+async function historyCheck(): Promise<Check> {
+  const kind = storageKind();
+  const name = "Histórico";
+  if (!kind) return { name, usage: "Não configurado: conecte um Postgres (Neon) no Vercel", ok: false, ms: null, detail: "só no navegador" };
+  const usage = kind === "postgres" ? "Postgres" : "Arquivo local (.data/)";
+  const t = Date.now();
+  try {
+    await listJobs();
+    return { name, usage, ok: true, ms: Date.now() - t };
+  } catch (e) {
+    return { name, usage, ok: false, ms: null, detail: e instanceof Error ? e.message.slice(0, 80) : "erro" };
+  }
 }

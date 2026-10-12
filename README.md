@@ -32,7 +32,10 @@ npm run dev                  # http://localhost:3000
 2. Em **Settings → Environment Variables**, defina:
    - `HF_CREDENTIALS` = `key-id:key-secret`
    - `APP_PASSWORD` = uma senha. **Recomendado:** sem ela, qualquer pessoa com a URL gera conteúdo com os seus créditos. Com ela, o navegador pede login (qualquer usuário + essa senha).
-3. Deploy.
+3. **Histórico no servidor:** em **Storage → Create Database → Neon (Serverless Postgres)**, escolha o plano **Free** e conecte ao projeto. O Vercel cria sozinho a variável `DATABASE_URL`. As tabelas são criadas automaticamente no primeiro acesso. (Qualquer Postgres serve: Supabase gratuito também funciona; basta definir `DATABASE_URL` com a connection string do pooler.) Sem banco, o histórico fica só no navegador e some quando os dados do site são apagados.
+4. Faça um novo deploy (variáveis novas só valem a partir do próximo deploy).
+
+A tela **Conta → Status das integrações** mostra a linha "Histórico" como Postgres quando está tudo certo.
 
 ## Como funciona
 
@@ -40,7 +43,8 @@ npm run dev                  # http://localhost:3000
 - `/api/generate` envia a geração e responde na hora com o `request_id`; o navegador consulta `/api/requests/:id` a cada 3 s. Assim nenhuma função do Vercel fica esperando o vídeo ficar pronto.
 - Uploads: `/api/upload` gera uma URL pré-assinada e o navegador envia o arquivo direto ao storage da Higgsfield (sem o limite de 4,5 MB do Vercel). Formatos: JPG, PNG, WEBP, GIF, WAV, MP4.
 - Custos vêm de `/estimate` (não cobra). Modelos Seedance retornam preço por segundo, não um número fixo.
-- Histórico, favoritos, estilos próprios e o fluxo do Canvas ficam no `localStorage` do navegador.
+- Histórico, favoritos, estilos próprios do Frame Flow, retratos do Avatar e o fluxo do Canvas ficam no servidor (Postgres no Vercel, tabelas `hubd_jobs` e `hubd_state`; `.data/hubd-store.json` localmente), com cópia no navegador para abrir na hora. Cada geração é gravada no envio e atualizada pelo servidor quando termina. Na primeira abertura, o histórico que só existia no navegador é enviado ao servidor.
+- O histórico é único para o portal (não há contas de usuário): quem tem a senha vê tudo.
 
 ## Limitações conhecidas
 

@@ -2,24 +2,10 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { api, post } from "@/lib/client";
-import { TERMINAL, type ModuleKey, type RequestStatus } from "@/lib/models";
+import { applyStatus, MAX_JOBS, type HfStatus, type Job } from "@/lib/jobs";
+import { TERMINAL, type ModuleKey } from "@/lib/models";
 
-export type Job = {
-  id: string;
-  module: ModuleKey;
-  endpoint: string;
-  label: string;
-  prompt?: string;
-  input: Record<string, unknown>;
-  status: RequestStatus;
-  images?: string[];
-  video?: string;
-  error?: string;
-  credits: number | null;
-  createdAt: number;
-  finishedAt?: number;
-  favorite?: boolean;
-};
+export type { Job };
 
 type SubmitArgs = {
   module: ModuleKey;
@@ -29,9 +15,13 @@ type SubmitArgs = {
   prompt?: string;
 };
 
+/** Onde o histórico está guardado: servidor (Postgres ou arquivo local) ou só neste navegador. */
+export type Storage = "postgres" | "file" | "browser" | "loading";
+
 type Ctx = {
   jobs: Job[];
   ready: boolean;
+  storage: Storage;
   submit: (a: SubmitArgs) => Promise<Job>;
   /** Envia e espera o fim. Rejeita se a geração não terminar como "completed". */
   run: (a: SubmitArgs) => Promise<Job>;
@@ -42,29 +32,27 @@ type Ctx = {
 };
 
 const JobsContext = createContext<Ctx | null>(null);
-const STORAGE_KEY = "hubd.jobs.v1";
-const MAX_JOBS = 300;
+// Cache local: mostra o histórico na hora enquanto o servidor responde.
+const CACHE_KEY = "hubd.jobs.v1";
+// Marca que o histórico antigo deste navegador já foi enviado ao servidor.
+const IMPORTED_KEY = "hubd.jobs.imported.v1";
 const POLL_MS = 3000;
 
-type ApiResponse = {
-  status: RequestStatus;
-  request_id: string;
-  images?: { url: string }[];
-  video?: { url: string };
-  error?: string;
-  credits?: number | null;
-};
+function readCache(): Job[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CACHE_KEY) ?? "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
 
-function applyResponse(job: Job, r: ApiResponse): Job {
-  const status = r.status;
-  return {
-    ...job,
-    status,
-    images: r.images?.map((i) => i.url) ?? job.images,
-    video: r.video?.url ?? job.video,
-    error: r.error ?? job.error,
-    finishedAt: TERMINAL.includes(status) ? (job.finishedAt ?? Date.now()) : undefined,
-  };
+function writeCache(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // storage cheio ou bloqueado
+  }
 }
 
 export function failureMessage(job: Job): string {
@@ -78,27 +66,55 @@ export function failureMessage(job: Job): string {
 export function JobsProvider({ children }: { children: React.ReactNode }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [ready, setReady] = useState(false);
+  const [storage, setStorage] = useState<Storage>("loading");
   const jobsRef = useRef<Job[]>([]);
   const waiters = useRef(new Map<string, ((j: Job) => void)[]>());
 
+  // 1) cache local na hora; 2) histórico do servidor (fonte da verdade); 3) envia o histórico antigo uma única vez.
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-      if (Array.isArray(saved)) setJobs(saved);
-    } catch {
-      // sem storage: começa vazio
-    }
+    const cached = readCache();
+    setJobs(cached);
     setReady(true);
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { storage: kind, jobs: serverJobs } = await api<{ storage: "postgres" | "file" | null; jobs: Job[] }>("/api/jobs");
+        if (cancelled) return;
+        if (!kind) return setStorage("browser");
+
+        let alreadyImported = false;
+        try {
+          alreadyImported = localStorage.getItem(IMPORTED_KEY) === "1";
+        } catch {
+          // sem storage
+        }
+        const serverIds = new Set(serverJobs.map((j) => j.id));
+        const localOnly = alreadyImported ? [] : cached.filter((j) => !serverIds.has(j.id));
+        if (localOnly.length) await post("/api/jobs/import", { jobs: localOnly }).catch(() => {});
+        writeCache(IMPORTED_KEY, "1");
+
+        if (cancelled) return;
+        // Gerações enviadas nesta aba enquanto o servidor respondia também entram.
+        setJobs((current) => {
+          const ids = new Set(serverJobs.map((j) => j.id));
+          const fresh = current.filter((j) => !ids.has(j.id) && !cached.some((c) => c.id === j.id));
+          return [...fresh, ...localOnly, ...serverJobs].sort((a, b) => b.createdAt - a.createdAt).slice(0, MAX_JOBS);
+        });
+        setStorage(kind);
+      } catch {
+        if (!cancelled) setStorage("browser");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     jobsRef.current = jobs;
     if (!ready) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs.slice(0, MAX_JOBS)));
-    } catch {
-      // storage cheio ou bloqueado
-    }
+    writeCache(CACHE_KEY, JSON.stringify(jobs.slice(0, MAX_JOBS)));
     for (const job of jobs) {
       if (!TERMINAL.includes(job.status)) continue;
       const list = waiters.current.get(job.id);
@@ -113,7 +129,8 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
     setJobs((prev) => prev.map((j) => (j.id === id ? fn(j) : j)));
   }, []);
 
-  // Polling de tudo que ainda não terminou.
+  // Polling de tudo que ainda não terminou (inclusive gerações iniciadas antes de fechar o navegador).
+  // O servidor aproveita cada consulta para atualizar o histórico gravado.
   useEffect(() => {
     if (!ready) return;
     let stopped = false;
@@ -122,8 +139,8 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
       await Promise.all(
         pending.map(async (job) => {
           try {
-            const r = await api<ApiResponse>(`/api/requests/${job.id}`);
-            if (!stopped) update(job.id, (j) => applyResponse(j, r));
+            const r = await api<HfStatus>(`/api/requests/${job.id}`);
+            if (!stopped) update(job.id, (j) => applyStatus(j, r));
           } catch {
             // falha de rede: tenta de novo no próximo ciclo
           }
@@ -139,21 +156,27 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
   }, [ready, update]);
 
   const submit = useCallback(async (a: SubmitArgs) => {
-    const r = await post<ApiResponse>("/api/generate", { endpoint: a.endpoint, input: a.input });
-    const job = applyResponse(
-      {
-        id: r.request_id,
-        module: a.module,
-        endpoint: a.endpoint,
-        label: a.label,
-        prompt: a.prompt,
-        input: a.input,
-        status: r.status,
-        credits: r.credits ?? null,
-        createdAt: Date.now(),
-      },
-      r,
-    );
+    const r = await post<HfStatus & { credits?: number | null; job?: Job }>("/api/generate", {
+      endpoint: a.endpoint,
+      input: a.input,
+      meta: { module: a.module, label: a.label, prompt: a.prompt },
+    });
+    const job =
+      r.job ??
+      applyStatus(
+        {
+          id: r.request_id,
+          module: a.module,
+          endpoint: a.endpoint,
+          label: a.label,
+          prompt: a.prompt,
+          input: a.input,
+          status: r.status,
+          credits: r.credits ?? null,
+          createdAt: Date.now(),
+        },
+        r,
+      );
     setJobs((prev) => [job, ...prev.filter((j) => j.id !== job.id)].slice(0, MAX_JOBS));
     return job;
   }, []);
@@ -186,11 +209,22 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
     [update],
   );
 
-  const toggleFavorite = useCallback((id: string) => update(id, (j) => ({ ...j, favorite: !j.favorite })), [update]);
-  const remove = useCallback((id: string) => setJobs((prev) => prev.filter((j) => j.id !== id)), []);
+  const toggleFavorite = useCallback(
+    (id: string) => {
+      const favorite = !jobsRef.current.find((j) => j.id === id)?.favorite;
+      update(id, (j) => ({ ...j, favorite }));
+      api(`/api/jobs/${id}`, { method: "PATCH", body: JSON.stringify({ favorite }) }).catch(() => {});
+    },
+    [update],
+  );
+
+  const remove = useCallback((id: string) => {
+    setJobs((prev) => prev.filter((j) => j.id !== id));
+    api(`/api/jobs/${id}`, { method: "DELETE" }).catch(() => {});
+  }, []);
 
   return (
-    <JobsContext.Provider value={{ jobs, ready, submit, run, waitFor, cancel, toggleFavorite, remove }}>
+    <JobsContext.Provider value={{ jobs, ready, storage, submit, run, waitFor, cancel, toggleFavorite, remove }}>
       {children}
     </JobsContext.Provider>
   );

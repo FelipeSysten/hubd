@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
+import { useSyncedState } from "@/components/useSyncedState";
 import { CostEstimate, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Select, UploadBox } from "@/components/ui";
 import { api } from "@/lib/client";
 import { ENDPOINTS } from "@/lib/models";
@@ -58,7 +59,7 @@ const STYLES: Style[] = [
   },
 ];
 
-const STYLES_KEY = "hubd.frameflow.styles.v1";
+const LEGACY_STYLES_KEY = "hubd.frameflow.styles.v1";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"];
 const ASPECT_LABEL: Record<string, string> = { "16:9": "Horizontal · 16:9", "9:16": "Vertical · 9:16", "1:1": "Quadrado · 1:1", "4:3": "Clássico · 4:3", "3:4": "Retrato · 3:4", "21:9": "Cinema · 21:9" };
 
@@ -66,7 +67,7 @@ type Health = { configured: boolean; checks: { name: string; ok: boolean }[] };
 
 export default function FrameFlowPage() {
   const { jobs, submit } = useJobs();
-  const [custom, setCustom] = useState<Style[]>([]);
+  const [custom, setCustom] = useSyncedState<Style[]>("frameflow-styles", [], LEGACY_STYLES_KEY);
   const [style, setStyle] = useState<Style>(STYLES[0]);
   const [idea, setIdea] = useState("");
   const [audioRef, setAudioRef] = useState<string | null>(null);
@@ -84,22 +85,10 @@ export default function FrameFlowPage() {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      setCustom(JSON.parse(localStorage.getItem(STYLES_KEY) ?? "[]"));
-    } catch {
-      // sem estilos próprios
-    }
     api<Health>("/api/health").then(setHealth).catch(() => setHealth(null));
   }, []);
 
-  function saveCustom(next: Style[]) {
-    setCustom(next);
-    try {
-      localStorage.setItem(STYLES_KEY, JSON.stringify(next));
-    } catch {
-      // storage indisponível
-    }
-  }
+  const saveCustom = setCustom;
 
   function createStyle() {
     if (!creating?.name.trim() || !creating.direction.trim()) return;

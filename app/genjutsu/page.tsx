@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
+import { useSyncedState } from "@/components/useSyncedState";
 import { CostEstimate, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Segmented, UploadBox, useVideoDuration } from "@/components/ui";
 import { api } from "@/lib/client";
 import { ENDPOINTS, type Endpoint } from "@/lib/models";
@@ -108,7 +109,7 @@ const BASE_EFFECTS: Effect[] = [
 ];
 
 type Preset = { id: string; name: string; preview_url?: string };
-const FAV_KEY = "hubd.genjutsu.favs.v1";
+const LEGACY_FAV_KEY = "hubd.genjutsu.favs.v1";
 
 export default function GenjutsuPage() {
   const { jobs, submit } = useJobs();
@@ -119,7 +120,7 @@ export default function GenjutsuPage() {
   const [images, setImages] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
   const [resolution, setResolution] = useState("720p");
-  const [favs, setFavs] = useState<string[]>([]);
+  const [favs, setFavs] = useSyncedState<string[]>("genjutsu-favs", [], LEGACY_FAV_KEY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -129,11 +130,6 @@ export default function GenjutsuPage() {
 
   useEffect(() => {
     api<Preset[]>("/api/catalog/restyle-presets").then(setPresets).catch(() => setPresets([]));
-    try {
-      setFavs(JSON.parse(localStorage.getItem(FAV_KEY) ?? "[]"));
-    } catch {
-      // sem favoritos salvos
-    }
   }, []);
 
   const restyles: Effect[] = presets.map((p, i) => ({
@@ -154,13 +150,7 @@ export default function GenjutsuPage() {
   const visible = category === "Favoritos" ? all.filter((e) => favs.includes(e.key)) : all.filter((e) => e.categories.includes(category));
 
   function toggleFav(key: string) {
-    const next = favs.includes(key) ? favs.filter((k) => k !== key) : [...favs, key];
-    setFavs(next);
-    try {
-      localStorage.setItem(FAV_KEY, JSON.stringify(next));
-    } catch {
-      // storage indisponível
-    }
+    setFavs((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   }
 
   function pick(e: Effect) {

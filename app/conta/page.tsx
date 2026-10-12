@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { spentCredits, useJobs } from "@/components/JobsProvider";
+import { spentCredits, useJobs, type Storage } from "@/components/JobsProvider";
 import { StatusPill } from "@/components/ui";
 import { api, formatCredits, timeAgo } from "@/lib/client";
 import { ENDPOINT_LABELS, MODULE_LABELS, TERMINAL, type Endpoint, type ModuleKey } from "@/lib/models";
@@ -12,7 +12,7 @@ type Health = { configured: boolean; checks: Check[] };
 const CONSOLE_URL = "https://console.higgsfield.ai";
 
 export default function ContaPage() {
-  const { jobs, cancel, remove } = useJobs();
+  const { jobs, cancel, remove, storage } = useJobs();
   const [health, setHealth] = useState<Health | null>(null);
   const [checking, setChecking] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export default function ContaPage() {
 
       <div className="split" style={{ gridTemplateColumns: "1fr 1fr" }}>
         <section className="panel">
-          <span className="label">Créditos usados neste navegador (estimativa)</span>
+          <span className="label">Créditos usados (estimativa)</span>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 48, fontWeight: 600, letterSpacing: -2, color: "var(--accent)" }}>{formatCredits(spent)}</div>
           <p className="muted small">
             {completed.length} gerações concluídas · {pending} em andamento · {failed} falharam (reembolsadas). Vídeos Seedance são cobrados por segundo e não entram nesta soma.
@@ -132,7 +132,7 @@ export default function ContaPage() {
 
       <section className="panel">
         <h3 className="h">Fila e histórico de gerações</h3>
-        <p className="muted small">Guardado neste navegador. As mídias ficam disponíveis na Higgsfield por pelo menos 7 dias; baixe o que quiser manter.</p>
+        <StorageNote storage={storage} />
         <div style={{ overflowX: "auto" }}>
           <table className="t">
             <thead>
@@ -192,5 +192,22 @@ export default function ContaPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function StorageNote({ storage }: { storage: Storage }) {
+  const retention = "As mídias ficam na Higgsfield por pelo menos 7 dias; baixe o que quiser manter.";
+  if (storage === "loading") return <p className="muted small">Carregando histórico…</p>;
+  if (storage === "browser") {
+    return (
+      <div className="error">
+        O histórico está só neste navegador e some se os dados do site forem apagados. Para guardar no servidor, conecte um banco Postgres gratuito ao projeto no Vercel (Storage → Neon) e faça um novo deploy. {retention}
+      </div>
+    );
+  }
+  return (
+    <p className="muted small">
+      Guardado no servidor ({storage === "postgres" ? "Postgres" : "arquivo local .data/"}): continua aqui ao fechar o navegador ou abrir em outro aparelho. {retention}
+    </p>
   );
 }

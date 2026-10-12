@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
+import { useSyncedState } from "@/components/useSyncedState";
 import { ErrorNote, Select } from "@/components/ui";
 import { downloadUrl, formatCredits, post } from "@/lib/client";
 import { ENDPOINTS } from "@/lib/models";
@@ -32,7 +33,7 @@ const NODE_INFO: Record<NodeType, { title: string; desc: string }> = {
 };
 
 const ADDABLE: NodeType[] = ["image", "video", "vertical", "extend", "edit"];
-const STORAGE_KEY = "hubd.canvas.v1";
+const LEGACY_CANVAS_KEY = "hubd.canvas.v1";
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 function defaults(type: NodeType): FlowNode {
@@ -121,34 +122,21 @@ function plan(request: string): { nodes: FlowNode[]; summary: string } {
 
 type Msg = { role: "user" | "agent"; text: string };
 
+const DEFAULT_NODES = plan("Tênis branco flutuando em estúdio, luz suave, fundo creme, anúncio de 8s").nodes;
+
 export default function CanvasPage() {
   const { run } = useJobs();
-  const [nodes, setNodes] = useState<FlowNode[]>(() => plan("Tênis branco flutuando em estúdio, luz suave, fundo creme, anúncio de 8s").nodes);
+  const [nodes, setNodes, nodesLoaded] = useSyncedState<FlowNode[]>("canvas", DEFAULT_NODES, LEGACY_CANVAS_KEY);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: "agent", text: "Descreva o que quer criar e eu monto o fluxo. Ex.: “Crie um anúncio de 8 s do tênis, com versão vertical.”" }]);
   const [draft, setDraft] = useState("");
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cost, setCost] = useState<{ credits: number; perSecond: boolean } | null>(null);
-  const loaded = useRef(false);
 
+  // Um fluxo salvo no meio da execução volta como "aguardando" (a execução não continua após recarregar).
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
-      if (Array.isArray(saved) && saved.length) setNodes(saved.map((n: FlowNode) => (n.state === "running" ? { ...n, state: "idle" } : n)));
-    } catch {
-      // sem fluxo salvo
-    }
-    loaded.current = true;
-  }, []);
-
-  useEffect(() => {
-    if (!loaded.current) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nodes));
-    } catch {
-      // storage indisponível
-    }
-  }, [nodes]);
+    if (nodesLoaded) setNodes((prev) => (prev.some((n) => n.state === "running") ? prev.map((n) => (n.state === "running" ? { ...n, state: "idle" } : n)) : prev));
+  }, [nodesLoaded, setNodes]);
 
   // Estimativa somando os nós (vídeos Seedance são cobrados por segundo e não retornam número fixo).
   useEffect(() => {
