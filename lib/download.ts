@@ -36,11 +36,31 @@ async function ytdlp(args: string[]): Promise<string> {
     return stdout;
   } catch (e) {
     const err = e as NodeJS.ErrnoException & { stderr?: string };
-    if (err.code === "ENOENT") throw new HttpError(501, "yt-dlp não está instalado no servidor (defina YTDLP_PATH).");
+    if (err.code === "ENOENT") {
+      throw new HttpError(501, `yt-dlp não encontrado em "${YTDLP}". Confira YTDLP_PATH no .env.local e reinicie o servidor (npm run dev).`);
+    }
     const line = (err.stderr ?? "").split("\n").filter((l) => l.includes("ERROR")).pop() ?? "";
     const reason = line.replace(/^.*ERROR:\s*/, "").slice(0, 300);
     throw new HttpError(422, reason ? `Não foi possível baixar este link: ${reason}` : "Não foi possível baixar este link.");
   }
+}
+
+/**
+ * Na Vercel não há binário: a função Python api/yt.py faz o mesmo trabalho com a biblioteca yt-dlp.
+ * A senha do portal (APP_PASSWORD) vai junto no Basic Auth, para o middleware liberar a chamada interna.
+ */
+export async function viaPythonFunction<T>(action: "preview" | "import", raw: string, requestUrl: string): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (process.env.APP_PASSWORD) headers.Authorization = `Basic ${Buffer.from(`hubd:${process.env.APP_PASSWORD}`).toString("base64")}`;
+  const res = await fetch(new URL(`/api/yt?action=${action}`, requestUrl), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ url: allowedLink(raw).toString() }),
+    cache: "no-store",
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new HttpError(res.status, typeof data?.error === "string" ? data.error : "Falha no serviço de download.");
+  return data as T;
 }
 
 export type LinkPreview = {

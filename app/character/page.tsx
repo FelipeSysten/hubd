@@ -189,7 +189,8 @@ export default function CharacterStudio() {
                   <strong style={{ fontSize: 14, lineHeight: 1.3 }}>{preview.title}</strong>
                   <span className="ch-hintline">
                     {preview.uploader ? `${preview.uploader} · ` : ""}
-                    {Math.round(preview.seconds)} s{preview.width ? ` · ${preview.width}×${preview.height}` : ""}
+                    {preview.seconds > 0 ? `${Math.round(preview.seconds)} s` : "duração na importação"}
+                    {preview.width ? ` · ${preview.width}×${preview.height}` : ""}
                   </span>
                   {preview.seconds > 0 && preview.seconds < VIDEO_MIN_S && <ErrorNote error={`Vídeo com menos de ${VIDEO_MIN_S} s: não serve para a troca.`} />}
                   <div className="row" style={{ gap: 8, marginTop: 4, flexWrap: "wrap" }}>
