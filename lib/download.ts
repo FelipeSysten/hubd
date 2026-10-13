@@ -55,11 +55,13 @@ export type LinkPreview = {
 /** Metadados do link (título, miniatura, duração) sem baixar o vídeo. */
 export async function previewLink(raw: string): Promise<LinkPreview> {
   const link = allowedLink(raw).toString();
+  // Erros do yt-dlp (login exigido, vídeo privado, sem yt-dlp) já chegam com o motivo real.
+  const out = await ytdlp(["--skip-download", "--dump-single-json", link]);
   let info: Record<string, unknown>;
   try {
-    info = JSON.parse(await ytdlp(["--skip-download", "--dump-single-json", link]));
+    info = JSON.parse(out);
   } catch {
-    throw new HttpError(422, "Não foi possível ler este link. Confira se o vídeo é público.");
+    throw new HttpError(422, "O site devolveu uma resposta inesperada ao ler o link. Tente de novo em instantes.");
   }
   return {
     title: String(info.title ?? "Vídeo sem título").slice(0, 200),
