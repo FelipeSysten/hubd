@@ -7,7 +7,8 @@ import { CharacterTile } from "@/components/character/CharacterTile";
 import { CreateCharacterModal } from "@/components/character/CreateCharacterModal";
 import { publicRefs, useCharacters } from "@/components/character/CharacterProvider";
 import { CostEstimate, ErrorNote, JobPreview, Segmented, Select, UploadBox, useVideoDuration } from "@/components/ui";
-import { post } from "@/lib/client";
+import { downloadUrl, post } from "@/lib/client";
+import type { LinkPreview } from "@/lib/download";
 import {
   referenceImages,
   swapCredits,
@@ -39,6 +40,8 @@ export default function CharacterStudio() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const duration = useVideoDuration(videoUrl);
   const [link, setLink] = useState("");
+  const [preview, setPreview] = useState<(LinkPreview & { url: string }) | null>(null);
+  const [previewing, setPreviewing] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState(false);
@@ -67,12 +70,28 @@ export default function CharacterStudio() {
   const effectivePrompt = customPrompt ? prompt : "";
   const estimateInput = character && videoUrl ? swapInput(videoUrl, referenceImages(character), effectivePrompt, settings.resolution) : null;
 
-  async function importLink() {
+  async function previewLink() {
+    setImportError(null);
+    setPreviewing(true);
+    try {
+      const info = await post<LinkPreview>("/api/media/preview", { url: link });
+      setPreview({ ...info, url: link.trim() });
+    } catch (e) {
+      setPreview(null);
+      setImportError(e instanceof Error ? e.message : "Falha ao ler o link.");
+    } finally {
+      setPreviewing(false);
+    }
+  }
+
+  async function importPreview() {
+    if (!preview) return;
     setImportError(null);
     setImporting(true);
     try {
-      const v = await post<{ url: string }>("/api/media/import", { url: link });
+      const v = await post<{ url: string }>("/api/media/import", { url: preview.url });
       setVideoUrl(v.url);
+      setPreview(null);
       setLink("");
     } catch (e) {
       setImportError(e instanceof Error ? e.message : "Falha ao baixar o link.");
@@ -155,14 +174,36 @@ export default function CharacterStudio() {
                 placeholder={`Cole o link do TikTok ou Instagram (vídeo de ${VIDEO_MIN_S} a ${VIDEO_MAX_S} s)`}
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && link.trim() && !importing && importLink()}
+                onKeyDown={(e) => e.key === "Enter" && link.trim() && !previewing && previewLink()}
               />
-              <button type="button" className="ch-btn ghost sm" onClick={importLink} disabled={!link.trim() || importing}>
-                {importing ? <span className="spinner" /> : null}
-                Baixar
+              <button type="button" className="ch-btn ghost sm" onClick={previewLink} disabled={!link.trim() || previewing}>
+                {previewing ? <span className="spinner" /> : null}
+                Visualizar
               </button>
             </div>
             <ErrorNote error={importError} />
+            {preview && (
+              <div className="ch-preview">
+                {preview.thumbnail ? <img src={preview.thumbnail} alt="" referrerPolicy="no-referrer" /> : <div className="ph">▶</div>}
+                <div className="col" style={{ minWidth: 0, gap: 4 }}>
+                  <strong style={{ fontSize: 14, lineHeight: 1.3 }}>{preview.title}</strong>
+                  <span className="ch-hintline">
+                    {preview.uploader ? `${preview.uploader} · ` : ""}
+                    {Math.round(preview.seconds)} s{preview.width ? ` · ${preview.width}×${preview.height}` : ""}
+                  </span>
+                  {preview.seconds > 0 && preview.seconds < VIDEO_MIN_S && <ErrorNote error={`Vídeo com menos de ${VIDEO_MIN_S} s: não serve para a troca.`} />}
+                  <div className="row" style={{ gap: 8, marginTop: 4, flexWrap: "wrap" }}>
+                    <button type="button" className="ch-btn sm" onClick={importPreview} disabled={importing}>
+                      {importing ? <span className="spinner" /> : null}
+                      ↓ Baixar
+                    </button>
+                    <button type="button" className="ch-btn ghost sm" onClick={() => setPreview(null)} disabled={importing}>
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <UploadBox
               kind="video"
               value={videoUrl}
@@ -171,6 +212,11 @@ export default function CharacterStudio() {
               hint="MP4, até 200 MB"
               height={260}
             />
+            {videoUrl && (
+              <button type="button" className="ch-btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={() => downloadUrl(videoUrl, "video-base.mp4")}>
+                ↓ Baixar arquivo
+              </button>
+            )}
             {tooShort && <ErrorNote error={`Este vídeo tem ${duration!.toFixed(1)} s. O mínimo é ${VIDEO_MIN_S} s.`} />}
             {duration != null && duration > VIDEO_MAX_S && (
               <p className="ch-hintline">Vídeo com {Math.round(duration)} s: a troca usa só os primeiros {VIDEO_MAX_S} s.</p>

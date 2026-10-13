@@ -43,6 +43,34 @@ async function ytdlp(args: string[]): Promise<string> {
   }
 }
 
+export type LinkPreview = {
+  title: string;
+  uploader: string | null;
+  thumbnail: string | null;
+  seconds: number;
+  width: number;
+  height: number;
+};
+
+/** Metadados do link (título, miniatura, duração) sem baixar o vídeo. */
+export async function previewLink(raw: string): Promise<LinkPreview> {
+  const link = allowedLink(raw).toString();
+  let info: Record<string, unknown>;
+  try {
+    info = JSON.parse(await ytdlp(["--skip-download", "--dump-single-json", link]));
+  } catch {
+    throw new HttpError(422, "Não foi possível ler este link. Confira se o vídeo é público.");
+  }
+  return {
+    title: String(info.title ?? "Vídeo sem título").slice(0, 200),
+    uploader: typeof info.uploader === "string" ? info.uploader : typeof info.channel === "string" ? info.channel : null,
+    thumbnail: typeof info.thumbnail === "string" ? info.thumbnail : null,
+    seconds: Number(info.duration) || 0,
+    width: Number(info.width) || 0,
+    height: Number(info.height) || 0,
+  };
+}
+
 export type ImportedVideo = { url: string; seconds: number; width: number; height: number };
 
 export async function importVideo(raw: string): Promise<ImportedVideo> {

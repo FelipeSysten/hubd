@@ -92,6 +92,10 @@
 .ch-hintline { font-size: 12px; color: var(--muted); line-height: 1.5; }
 .ch-linkrow { display: flex; gap: 8px; align-items: center; }
 .ch-linkrow .ch-input { flex: 1; min-width: 0; }
+.ch-preview { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--border-2); border-radius: 16px; background: var(--field); }
+.ch-preview img, .ch-preview .ph { width: 92px; aspect-ratio: 9 / 16; border-radius: 10px; object-fit: cover; flex: none; background: #0c0c0e; display: grid; place-items: center; color: var(--muted); }
+.ch-preview .ph { font-size: 22px; }
+.ch-preview > .col { flex: 1; }
 .ch-mono { font-family: var(--font-ch-mono), monospace; }
 .ch-tag { display: inline-flex; font-family: var(--font-ch-mono), monospace; font-size: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 3px 8px; color: #cfccc3; }
 .ch-switch { width: 44px; height: 24px; border-radius: 999px; background: #2a2a2e; position: relative; flex: none; }
