@@ -134,15 +134,20 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     let stopped = false;
+    const inFlight = new Set<string>(); // evita consultas sobrepostas (a cópia do vídeo do Veo leva alguns segundos)
     const tick = async () => {
-      const pending = jobsRef.current.filter((j) => !TERMINAL.includes(j.status));
+      const pending = jobsRef.current.filter((j) => !TERMINAL.includes(j.status) && !inFlight.has(j.id));
       await Promise.all(
         pending.map(async (job) => {
+          inFlight.add(job.id);
           try {
-            const r = await api<HfStatus>(`/api/requests/${job.id}`);
+            const q = job.ref ? `?ref=${encodeURIComponent(job.ref)}` : "";
+            const r = await api<HfStatus>(`/api/requests/${job.id}${q}`);
             if (!stopped) update(job.id, (j) => applyStatus(j, r));
           } catch {
             // falha de rede: tenta de novo no próximo ciclo
+          } finally {
+            inFlight.delete(job.id);
           }
         }),
       );
@@ -239,4 +244,9 @@ export function useJobs() {
 /** Créditos estimados das gerações concluídas (a API pública não expõe o saldo da conta). */
 export function spentCredits(jobs: Job[]): number {
   return jobs.reduce((sum, j) => sum + (j.status === "completed" && j.credits ? j.credits : 0), 0);
+}
+
+/** Custo estimado em US$ das gerações do Google concluídas (cobrado na conta Google). */
+export function spentUsd(jobs: Job[]): number {
+  return jobs.reduce((sum, j) => sum + (j.status === "completed" && j.usd ? j.usd : 0), 0);
 }

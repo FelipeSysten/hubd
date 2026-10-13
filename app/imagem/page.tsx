@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
-import { CostEstimate, ErrorNote, Field, GenerateBar, ResultsGrid, Segmented, UploadBox } from "@/components/ui";
+import { CostEstimate, EnhanceButton, ErrorNote, Field, GenerateBar, ResultsGrid, Segmented, UploadBox, useProviders } from "@/components/ui";
 import { api, readQuery } from "@/lib/client";
 import { IMAGE_MODELS, type ImageModel } from "@/lib/models";
 
@@ -20,6 +20,10 @@ const FEATURED: [string, string][] = [
 const QUANTITIES = [1, 2, 4] as const;
 
 function buildInput(m: ImageModel, o: { prompt: string; aspect: string; resolution: string; batch: number; styleId: string | null; ref: string | null; enhance: boolean }) {
+  if (m.google) {
+    // Nano Banana: tamanho em "1K/2K/4K"; referências viram edição da imagem.
+    return { prompt: o.prompt, aspect_ratio: o.aspect, image_size: o.resolution, ...(o.ref ? { image_urls: [o.ref] } : {}) };
+  }
   const input: Record<string, unknown> = { prompt: o.prompt, aspect_ratio: o.aspect, resolution: o.resolution };
   if (m.batch) {
     input.batch_size = o.batch;
@@ -35,6 +39,7 @@ function buildInput(m: ImageModel, o: { prompt: string; aspect: string; resoluti
 
 export default function ImagemPage() {
   const { jobs, submit } = useJobs();
+  const providers = useProviders();
   const [model, setModel] = useState<ImageModel>(IMAGE_MODELS[0]);
   const [prompt, setPrompt] = useState("Retrato editorial de uma ceramista no ateliê, luz suave de janela, filme 35 mm");
   const [aspect, setAspect] = useState("3:4");
@@ -80,10 +85,17 @@ export default function ImagemPage() {
     setBusy(true);
     try {
       const real = buildInput(model, { prompt: prompt.trim(), aspect, resolution, batch: plan.batch, styleId, ref, enhance });
-      for (let i = 0; i < plan.requests; i++) {
-        await submit({ module: "imagem", endpoint: model.endpoint, input: real, label: prompt.trim().slice(0, 80), prompt: prompt.trim() });
-      }
+      // Em paralelo: as imagens do Google são geradas durante a própria requisição.
+      const results = await Promise.allSettled(
+        Array.from({ length: plan.requests }, () =>
+          submit({ module: "imagem", endpoint: model.endpoint, input: real, label: prompt.trim().slice(0, 80), prompt: prompt.trim() }),
+        ),
+      );
       setTab("Recentes");
+      const failed = results.find((r): r is PromiseRejectedResult => r.status === "rejected");
+      if (failed) throw failed.reason;
+      const blocked = results.find((r) => r.status === "fulfilled" && r.value.status !== "completed" && r.value.error);
+      if (blocked?.status === "fulfilled") setError(blocked.value.error!);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Falha ao gerar.");
     } finally {
@@ -101,15 +113,16 @@ export default function ImagemPage() {
         <aside className="panel sticky">
           <h2 className="h">Image Generation</h2>
 
-          <Field label="Prompt">
+          <Field label="Prompt" aside={<EnhanceButton value={prompt} onChange={setPrompt} kind="image" />}>
             <textarea className="textarea" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Descreva a imagem…" />
           </Field>
 
           <Field label="Modelo">
             <select className="select" value={model.endpoint} onChange={(e) => pickModel(IMAGE_MODELS.find((m) => m.endpoint === e.target.value)!)}>
               {IMAGE_MODELS.map((m) => (
-                <option key={m.endpoint} value={m.endpoint}>
+                <option key={m.endpoint} value={m.endpoint} disabled={m.google && providers?.google === false}>
                   {m.label}
+                  {m.google && providers?.google === false ? " (configure GEMINI_API_KEY)" : ""}
                 </option>
               ))}
             </select>
@@ -160,10 +173,14 @@ export default function ImagemPage() {
             <p className="muted small">Este modelo não aceita imagem de referência.</p>
           )}
 
-          <label className="toggle">
-            <input type="checkbox" checked={enhance} onChange={(e) => setEnhance(e.target.checked)} />
-            Melhorar prompt automaticamente
-          </label>
+          {model.google ? (
+            <p className="muted small">{busy ? "Gerando no Google… leva de 5 a 40 s por imagem." : "Gerado pela Gemini API e cobrado na sua conta Google. Com imagem de referência, o Nano Banana edita a imagem conforme o prompt."}</p>
+          ) : (
+            <label className="toggle">
+              <input type="checkbox" checked={enhance} onChange={(e) => setEnhance(e.target.checked)} />
+              Melhorar prompt automaticamente
+            </label>
+          )}
 
           <ErrorNote error={error} />
           <GenerateBar label="Gerar imagem" busy={busy} onClick={generate} cost={<CostEstimate endpoint={model.endpoint} input={input} times={plan.requests} />} />

@@ -16,6 +16,10 @@ export type Job = {
   createdAt: number;
   finishedAt?: number;
   favorite?: boolean;
+  /** Google: nome da operação do Veo, para consultar o andamento. */
+  ref?: string;
+  /** Google: custo estimado em US$ (cobrado na conta Google, fora dos créditos Higgsfield). */
+  usd?: number | null;
 };
 
 /** Resposta da Higgsfield em /requests/{id}/status (e no envio). */

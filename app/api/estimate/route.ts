@@ -1,4 +1,5 @@
-import { ALLOWED_ENDPOINTS } from "@/lib/models";
+import { ALLOWED_ENDPOINTS, isGoogleEndpoint } from "@/lib/models";
+import { googleCostUsd } from "@/lib/google";
 import { errorResponse, HttpError, hfJson } from "@/lib/hf";
 
 type Estimate = { type: "estimate"; credits: string; usd: string } | { type: "description"; pricing_description: string };
@@ -19,6 +20,11 @@ export async function POST(req: Request) {
   try {
     const { endpoint, input } = await req.json();
     if (typeof endpoint !== "string" || !ALLOWED_ENDPOINTS.has(endpoint)) throw new HttpError(400, "Modelo não permitido.");
+    if (isGoogleEndpoint(endpoint)) {
+      // Preço público do Google, cobrado na conta Google (não em créditos Higgsfield).
+      const usd = googleCostUsd(endpoint.slice("google/".length), input ?? {});
+      return Response.json({ credits: null, usd, provider: "google", description: "Preço público da Gemini API, cobrado na sua conta Google." });
+    }
     const e = await hfJson<Estimate>(`/estimate/${endpoint}`, { method: "POST", body: JSON.stringify(input ?? {}) });
     if (e.type === "estimate") return Response.json({ credits: Number(e.credits), usd: Number(e.usd) });
     const description = e.type === "description" ? e.pricing_description : null;

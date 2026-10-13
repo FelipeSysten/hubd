@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { spentCredits, useJobs, type Storage } from "@/components/JobsProvider";
+import { spentCredits, spentUsd, useJobs, type Storage } from "@/components/JobsProvider";
 import { StatusPill } from "@/components/ui";
 import { api, formatCredits, timeAgo } from "@/lib/client";
 import { ENDPOINT_LABELS, MODULE_LABELS, TERMINAL, type Endpoint, type ModuleKey } from "@/lib/models";
@@ -52,6 +52,12 @@ export default function ContaPage() {
           <p className="muted small">
             {completed.length} gerações concluídas · {pending} em andamento · {failed} falharam (reembolsadas). Vídeos Seedance são cobrados por segundo e não entram nesta soma.
           </p>
+          {spentUsd(jobs) > 0 && (
+            <p className="small">
+              Google (Gemini API): <b style={{ color: "var(--accent)" }}>≈ US$ {spentUsd(jobs).toFixed(2).replace(".", ",")}</b>{" "}
+              <span className="muted">· cobrado na conta Google, onde entram os créditos mensais da sua assinatura</span>
+            </p>
+          )}
           <div className="note">A API pública da Higgsfield não informa o saldo da conta. O saldo real e o extrato ficam no console.</div>
           <div className="row">
             <a className="btn" href={CONSOLE_URL} target="_blank" rel="noopener">
@@ -59,6 +65,9 @@ export default function ContaPage() {
             </a>
             <a className="btn ghost" href={CONSOLE_URL} target="_blank" rel="noopener">
               Ver extrato
+            </a>
+            <a className="btn ghost" href="https://aistudio.google.com/" target="_blank" rel="noopener">
+              Google AI Studio
             </a>
           </div>
         </section>

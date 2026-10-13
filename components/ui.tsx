@@ -184,7 +184,13 @@ export function UploadBox({
   );
 }
 
-type EstimateState = { credits: number | null; usd?: number; description?: string | null; rates?: Record<string, number> | null };
+type EstimateState = {
+  credits: number | null;
+  usd?: number | null;
+  provider?: "google";
+  description?: string | null;
+  rates?: Record<string, number> | null;
+};
 
 /**
  * Estimativa de custo via /estimate (não cobra).
@@ -231,6 +237,14 @@ export function CostEstimate({
   if (!state) return <span className="muted small">{waiting}</span>;
   if (state.credits != null) {
     return <span className="muted">≈ {formatCredits(state.credits * times)} créditos</span>;
+  }
+  if (state.provider === "google") {
+    if (state.usd == null) return <span className="muted small">preço indisponível</span>;
+    return (
+      <span className="muted" title={state.description ?? undefined} style={{ cursor: "help" }}>
+        ≈ US$ {(state.usd * times).toFixed(state.usd * times < 1 ? 3 : 2).replace(".", ",")} <span className="small">· conta Google</span>
+      </span>
+    );
   }
   const rate = resolution ? state.rates?.[resolution] : undefined;
   if (rate != null) {
@@ -474,4 +488,69 @@ export function GenerateBar({
 export function useLatest(module: Job["module"], filter?: (j: Job) => boolean): Job | undefined {
   const { jobs } = useJobs();
   return jobs.find((j) => j.module === module && (!filter || filter(j)));
+}
+
+// ---------- Provedores e IA de texto ----------
+
+type Providers = { higgsfield: boolean; google: boolean; storage: string | null };
+let providersPromise: Promise<Providers> | null = null;
+
+/** Quais integrações o servidor tem configuradas (consultado uma vez por carregamento). */
+export function useProviders(): Providers | null {
+  const [p, setP] = useState<Providers | null>(null);
+  useEffect(() => {
+    providersPromise ??= fetch("/api/providers")
+      .then((r) => r.json())
+      .catch(() => ({ higgsfield: false, google: false, storage: null }));
+    providersPromise.then(setP);
+  }, []);
+  return p;
+}
+
+/** "✦ Melhorar com IA": reescreve o texto com o Gemini. Some se o Google não estiver configurado. */
+export function EnhanceButton({ value, onChange, kind }: { value: string; onChange: (v: string) => void; kind: "image" | "video" | "idea" | "script" }) {
+  const providers = useProviders();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [previous, setPrevious] = useState<string | null>(null);
+  if (!providers?.google) return null;
+
+  async function run() {
+    setError(null);
+    setBusy(true);
+    try {
+      const { text } = await post<{ text: string }>("/api/ai/enhance", { text: value, kind });
+      setPrevious(value);
+      onChange(text);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao melhorar.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <span className="row" style={{ gap: 8 }}>
+      {error && (
+        <span className="small" style={{ color: "var(--red)" }} title={error}>
+          falhou
+        </span>
+      )}
+      {previous !== null && !busy && (
+        <button
+          type="button"
+          className="muted small"
+          onClick={() => {
+            onChange(previous);
+            setPrevious(null);
+          }}
+        >
+          desfazer
+        </button>
+      )}
+      <button type="button" className="link" onClick={run} disabled={busy || !value.trim()} title="Reescreve o texto com o Gemini (Google)">
+        {busy ? <span className="spinner" style={{ width: 12, height: 12 }} /> : "✦"} Melhorar com IA
+      </button>
+    </span>
+  );
 }

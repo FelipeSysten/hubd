@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
 import { useSyncedState } from "@/components/useSyncedState";
-import { ErrorNote, Select } from "@/components/ui";
+import { ErrorNote, Select, useProviders } from "@/components/ui";
 import { downloadUrl, formatCredits, post } from "@/lib/client";
 import { ENDPOINTS } from "@/lib/models";
 
@@ -122,10 +122,33 @@ function plan(request: string): { nodes: FlowNode[]; summary: string } {
 
 type Msg = { role: "user" | "agent"; text: string };
 
+type AiPlan = { summary: string; prompt: string; nodes: { type: string; aspect?: string; duration?: number; resolution?: string; text?: string }[] };
+
+const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"];
+const NODE_RESOLUTIONS = ["480p", "720p", "1080p"];
+
+/** Converte o plano do Gemini em nós válidos (descarta tipos e valores desconhecidos). */
+function fromAiPlan(p: AiPlan): FlowNode[] {
+  const nodes: FlowNode[] = [{ ...defaults("prompt"), text: p.prompt.trim() }];
+  for (const n of p.nodes) {
+    if (!["image", "video", "vertical", "extend", "edit"].includes(n.type)) continue;
+    const node = defaults(n.type as NodeType);
+    if (n.aspect && ASPECTS.includes(n.aspect)) node.aspect = n.aspect;
+    if (n.duration && node.duration !== undefined) node.duration = Math.min(15, Math.max(4, Math.round(n.duration)));
+    if (n.resolution && node.resolution && NODE_RESOLUTIONS.includes(n.resolution)) node.resolution = n.resolution;
+    if (n.text?.trim() && node.text !== undefined) node.text = n.text.trim();
+    nodes.push(node);
+  }
+  if (!nodes.some((n) => n.type === "image")) nodes.splice(1, 0, defaults("image"));
+  return nodes;
+}
+
 const DEFAULT_NODES = plan("Tênis branco flutuando em estúdio, luz suave, fundo creme, anúncio de 8s").nodes;
 
 export default function CanvasPage() {
   const { run } = useJobs();
+  const providers = useProviders();
+  const [thinking, setThinking] = useState(false);
   const [nodes, setNodes, nodesLoaded] = useSyncedState<FlowNode[]>("canvas", DEFAULT_NODES, LEGACY_CANVAS_KEY);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: "agent", text: "Descreva o que quer criar e eu monto o fluxo. Ex.: “Crie um anúncio de 8 s do tênis, com versão vertical.”" }]);
   const [draft, setDraft] = useState("");
@@ -204,14 +227,31 @@ export default function CanvasPage() {
     setRunning(false);
   }
 
-  function ask(e: React.FormEvent) {
+  async function ask(e: React.FormEvent) {
     e.preventDefault();
     const text = draft.trim();
-    if (!text) return;
+    if (!text || thinking) return;
+    setDraft("");
+    setMsgs((m) => [...m, { role: "user", text }]);
+
+    // Com o Google configurado, o Gemini interpreta o pedido; sem ele (ou se falhar), valem as regras locais.
+    if (providers?.google) {
+      setThinking(true);
+      try {
+        const current = nodes.map(({ type, text: t, aspect, duration, resolution }) => ({ type, text: t, aspect, duration, resolution }));
+        const ai = await post<AiPlan>("/api/ai/plan", { request: text, current });
+        setNodes(fromAiPlan(ai));
+        setMsgs((m) => [...m, { role: "agent", text: `${ai.summary} Revise os nós e clique em Executar.` }]);
+        return;
+      } catch (err) {
+        setMsgs((m) => [...m, { role: "agent", text: `Não consegui falar com o Gemini (${err instanceof Error ? err.message : "erro"}). Montei pelas regras locais.` }]);
+      } finally {
+        setThinking(false);
+      }
+    }
     const { nodes: planned, summary } = plan(text);
     setNodes(planned);
-    setMsgs((m) => [...m, { role: "user", text }, { role: "agent", text: `${summary} Revise os nós e clique em Executar.` }]);
-    setDraft("");
+    setMsgs((m) => [...m, { role: "agent", text: `${summary} Revise os nós e clique em Executar.` }]);
   }
 
   const totalCost = cost ? `${cost.credits ? `≈ ${formatCredits(cost.credits)} créditos` : ""}${cost.perSecond ? `${cost.credits ? " + " : ""}vídeo cobrado por segundo` : ""}` : "calculando…";
@@ -262,7 +302,7 @@ export default function CanvasPage() {
         <aside className="panel">
           <div className="row">
             <h3 className="h">Agente</h3>
-            <span className="muted small">monta o fluxo a partir do seu pedido</span>
+            <span className="muted small">{providers?.google ? "Gemini monta o fluxo a partir do seu pedido" : "monta o fluxo a partir do seu pedido"}</span>
           </div>
           <div className="chat">
             {msgs.map((m, i) => (
@@ -270,6 +310,11 @@ export default function CanvasPage() {
                 {m.text}
               </div>
             ))}
+            {thinking && (
+              <div className="msg agent row">
+                <span className="spinner" style={{ width: 12, height: 12 }} /> pensando…
+              </div>
+            )}
           </div>
           <div className="row">
             <button className="btn sm" disabled={running} onClick={() => execute(0)}>

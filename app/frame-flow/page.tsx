@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
 import { useSyncedState } from "@/components/useSyncedState";
-import { CostEstimate, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Select, UploadBox } from "@/components/ui";
+import { CostEstimate, EnhanceButton, ErrorNote, Field, GenerateBar, JobPreview, QueueList, Select, UploadBox } from "@/components/ui";
 import { api } from "@/lib/client";
 import { ENDPOINTS } from "@/lib/models";
 
@@ -184,9 +184,12 @@ export default function FrameFlowPage() {
           <div className="panel">
             <div className="row between">
               <span className="label">Ideia ou referência</span>
-              <button className="link" onClick={() => setShowAudio((v) => !v)}>
-                ∿ A partir de áudio
-              </button>
+              <span className="row" style={{ gap: 14 }}>
+                <EnhanceButton value={idea} onChange={setIdea} kind="idea" />
+                <button className="link" onClick={() => setShowAudio((v) => !v)}>
+                  ∿ A partir de áudio
+                </button>
+              </span>
             </div>
             <textarea className="textarea" value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="Ex.: apresentar um aplicativo que organiza a rotina." />
             <div className="grid2">

@@ -1,6 +1,7 @@
 import { ENDPOINTS } from "@/lib/models";
 import { hfFetch } from "@/lib/hf";
 import { listJobs, storageKind } from "@/lib/store";
+import { googleConfigured } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export async function GET() {
   }
   const checks = await Promise.all([
     historyCheck(),
+    googleCheck(),
     timed("Higgsfield API", "Autenticação e fila", () => hfFetch("/requests/00000000-0000-4000-8000-000000000000/status"), (s) => s === 404),
     timed("Seedance 2.5", "Vídeo, Frame Flow, Avatar", estimate(ENDPOINTS.seedanceT2V, { prompt: "x" }), (s) => s === 200),
     timed("Kling 3.0", "Vídeo", estimate(ENDPOINTS.klingT2V, { prompt: "x" }), (s) => s === 200),
@@ -54,4 +56,17 @@ async function historyCheck(): Promise<Check> {
   } catch (e) {
     return { name, usage, ok: false, ms: null, detail: e instanceof Error ? e.message.slice(0, 80) : "erro" };
   }
+}
+
+// Lista de modelos: valida a chave do Google sem custo.
+async function googleCheck(): Promise<Check> {
+  const name = "Google Gemini";
+  const usage = "Melhorar com IA, agente do Canvas, Nano Banana, Veo";
+  if (!googleConfigured()) return { name, usage, ok: false, ms: null, detail: "GEMINI_API_KEY não configurada" };
+  return timed(
+    name,
+    usage,
+    () => fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1", { headers: { "x-goog-api-key": process.env.GEMINI_API_KEY! }, cache: "no-store" }),
+    (s) => s === 200,
+  );
 }

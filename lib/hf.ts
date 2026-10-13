@@ -82,3 +82,14 @@ export function errorResponse(err: unknown): Response {
 export function isUuid(id: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 }
+
+/** Guarda bytes (ex.: mídia gerada pelo Google) no storage da Higgsfield e devolve a URL pública. */
+export async function storeBytes(bytes: Uint8Array, contentType: string): Promise<string> {
+  const up = await hfJson<{ public_url: string; upload_url: string; upload_headers: Record<string, string> }>("/files/generate-upload-url", {
+    method: "POST",
+    body: JSON.stringify({ content_type: contentType }),
+  });
+  const res = await fetch(up.upload_url, { method: "PUT", headers: up.upload_headers, body: bytes as unknown as BodyInit });
+  if (!res.ok) throw new HttpError(502, `Falha ao guardar a mídia gerada (HTTP ${res.status}).`);
+  return up.public_url;
+}

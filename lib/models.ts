@@ -48,6 +48,14 @@ export const ENDPOINTS = {
   genjutsuMotion: "higgsfield/genjutsu/motion-transfer/v1.0",
   genjutsuSwap: "higgsfield/genjutsu/object-swap/v1.0",
   genjutsuRestyle: "higgsfield/genjutsu/restyle/v1.0",
+
+  // Google (Gemini API). O prefixo "google/" direciona a geração para lib/google.ts.
+  googleNanoBanana: "google/gemini-nano-banana-2.1",
+  googleNanoBananaLite: "google/gemini-3.1-flash-lite-image",
+  googleNanoBananaPro: "google/gemini-3-pro-image",
+  googleVeo: "google/veo-3.1-generate-preview",
+  googleVeoFast: "google/veo-3.1-fast-generate-preview",
+  googleVeoLite: "google/veo-3.1-lite-generate-preview",
 } as const;
 
 export type Endpoint = (typeof ENDPOINTS)[keyof typeof ENDPOINTS];
@@ -76,6 +84,12 @@ export const ENDPOINT_LABELS: Record<Endpoint, string> = {
   [ENDPOINTS.genjutsuMotion]: "Genjutsu · Transferência de movimento",
   [ENDPOINTS.genjutsuSwap]: "Genjutsu · Substituir objeto",
   [ENDPOINTS.genjutsuRestyle]: "Genjutsu · Restyle",
+  [ENDPOINTS.googleNanoBanana]: "Nano Banana 2.1 · Google",
+  [ENDPOINTS.googleNanoBananaLite]: "Nano Banana 2 Lite · Google",
+  [ENDPOINTS.googleNanoBananaPro]: "Nano Banana Pro · Google",
+  [ENDPOINTS.googleVeo]: "Veo 3.1 · Google",
+  [ENDPOINTS.googleVeoFast]: "Veo 3.1 Fast · Google",
+  [ENDPOINTS.googleVeoLite]: "Veo 3.1 Lite · Google",
 };
 
 // ---------- Imagem ----------
@@ -88,7 +102,13 @@ export type ImageModel = {
   batch: boolean; // aceita batch_size 1|4 numa única request
   styles: boolean; // aceita style_id dos estilos Soul
   reference: "image_reference_url" | "image_urls" | null;
+  google?: boolean; // gerado pela Gemini API (precisa de GEMINI_API_KEY)
 };
+
+export const isGoogleEndpoint = (endpoint: string) => endpoint.startsWith("google/");
+
+// Proporções aceitas pelos modelos de imagem do Google.
+const GOOGLE_IMAGE_ASPECTS = ["1:1", "3:4", "4:3", "16:9", "9:16", "2:3", "3:2", "4:5", "5:4", "21:9"];
 
 export const IMAGE_MODELS: ImageModel[] = [
   {
@@ -136,6 +156,36 @@ export const IMAGE_MODELS: ImageModel[] = [
     styles: false,
     reference: "image_urls",
   },
+  {
+    endpoint: ENDPOINTS.googleNanoBanana,
+    label: "Nano Banana 2.1 · Google",
+    aspects: GOOGLE_IMAGE_ASPECTS,
+    resolutions: ["1K", "2K", "4K"],
+    batch: false,
+    styles: false,
+    reference: "image_urls",
+    google: true,
+  },
+  {
+    endpoint: ENDPOINTS.googleNanoBananaLite,
+    label: "Nano Banana 2 Lite · Google",
+    aspects: GOOGLE_IMAGE_ASPECTS,
+    resolutions: ["1K"],
+    batch: false,
+    styles: false,
+    reference: "image_urls",
+    google: true,
+  },
+  {
+    endpoint: ENDPOINTS.googleNanoBananaPro,
+    label: "Nano Banana Pro · Google",
+    aspects: GOOGLE_IMAGE_ASPECTS,
+    resolutions: ["1K", "2K", "4K"],
+    batch: false,
+    styles: false,
+    reference: "image_urls",
+    google: true,
+  },
 ];
 
 // ---------- Vídeo ----------
@@ -149,7 +199,19 @@ export type VideoModel = {
   resolutions: string[] | null; // null = modelo não expõe resolução
   aspects: string[];
   endFrame: "end_image_url" | "last_image_url";
-  audio: "generate_audio" | "sound";
+  audio: "generate_audio" | "sound" | "always"; // "always" = áudio sempre ligado (Veo)
+  google?: boolean;
+  /** Veo: 1080p e 4k só existem com 8 s. */
+  only8sAbove720?: boolean;
+};
+
+const VEO_BASE = {
+  durations: [4, 6, 8],
+  aspects: ["16:9", "9:16"],
+  endFrame: "end_image_url" as const,
+  audio: "always" as const,
+  google: true,
+  only8sAbove720: true,
 };
 
 export const VIDEO_MODELS: VideoModel[] = [
@@ -186,7 +248,15 @@ export const VIDEO_MODELS: VideoModel[] = [
     endFrame: "last_image_url",
     audio: "sound",
   },
+  { key: "veo", label: "Veo 3.1 · Google", t2v: ENDPOINTS.googleVeo, i2v: ENDPOINTS.googleVeo, resolutions: ["720p", "1080p", "4k"], ...VEO_BASE },
+  { key: "veo-fast", label: "Veo 3.1 Fast · Google", t2v: ENDPOINTS.googleVeoFast, i2v: ENDPOINTS.googleVeoFast, resolutions: ["720p", "1080p", "4k"], ...VEO_BASE },
+  { key: "veo-lite", label: "Veo 3.1 Lite · Google", t2v: ENDPOINTS.googleVeoLite, i2v: ENDPOINTS.googleVeoLite, resolutions: ["720p", "1080p"], ...VEO_BASE },
 ];
+
+/** Durações válidas para a resolução escolhida. */
+export function videoDurations(m: VideoModel, resolution: string): number[] {
+  return m.only8sAbove720 && resolution !== "720p" ? [8] : m.durations;
+}
 
 export type VideoParams = {
   model: VideoModel;
@@ -202,11 +272,18 @@ export type VideoParams = {
 /** Monta endpoint + input de vídeo respeitando o schema de cada família. */
 export function buildVideoRequest(p: VideoParams): { endpoint: Endpoint; input: Record<string, unknown> } {
   const m = p.model;
+  if (m.google) {
+    // Schema próprio do hubd para o Veo (convertido em lib/google.ts).
+    const input: Record<string, unknown> = { prompt: p.prompt.trim(), duration: p.duration, resolution: p.resolution, aspect_ratio: p.aspect };
+    if (p.imageUrl) input.image_url = p.imageUrl;
+    if (p.imageUrl && p.endImageUrl) input.end_image_url = p.endImageUrl;
+    return { endpoint: m.t2v, input };
+  }
   const input: Record<string, unknown> = { duration: p.duration };
   if (p.prompt.trim()) input.prompt = p.prompt.trim();
   if (m.resolutions) input.resolution = p.resolution;
   if (m.audio === "generate_audio") input.generate_audio = p.audio;
-  else input.sound = p.audio ? "on" : "off";
+  else if (m.audio === "sound") input.sound = p.audio ? "on" : "off";
 
   if (p.imageUrl) {
     input.image_url = p.imageUrl;

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useJobs, type Job } from "@/components/JobsProvider";
 import { useSyncedState } from "@/components/useSyncedState";
-import { ErrorNote, Field, QueueList, Segmented, Select, StatusPill, UploadBox } from "@/components/ui";
+import { EnhanceButton, ErrorNote, Field, QueueList, Segmented, Select, StatusPill, UploadBox } from "@/components/ui";
 import { downloadUrl } from "@/lib/client";
 import { ENDPOINTS, TERMINAL } from "@/lib/models";
 
@@ -169,7 +169,17 @@ export default function AvatarPage() {
             {!photo && persona && !portraits[`${persona.key}-${format}`] && <span className="muted small">O retrato de {persona.name} é gerado na primeira vez (Higgsfield Soul) e reaproveitado depois.</span>}
           </Field>
 
-          <Field label="2 · Roteiro" aside={<span className="muted small">{script.length.toLocaleString("pt-BR")} / {MAX_CHARS.toLocaleString("pt-BR")}</span>}>
+          <Field
+            label="2 · Roteiro"
+            aside={
+              <span className="row" style={{ gap: 12 }}>
+                <span className="muted small">
+                  {script.length.toLocaleString("pt-BR")} / {MAX_CHARS.toLocaleString("pt-BR")}
+                </span>
+                <EnhanceButton value={script} onChange={setScript} kind="script" />
+              </span>
+            }
+          >
             <textarea className="textarea" value={script} maxLength={MAX_CHARS} onChange={(e) => setScript(e.target.value)} />
             <span className="small" style={{ color: seconds > 30 ? "var(--warm)" : "var(--muted)" }}>
               Fala estimada: {seconds} s{seconds > 30 ? " — o vídeo tem no máximo 30 s; encurte o roteiro para caber." : ` · vídeo de ${duration} s`}
