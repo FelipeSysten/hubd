@@ -27,6 +27,8 @@ export async function POST(req: Request) {
     };
 
     const job = isGoogleEndpoint(endpoint) ? await runGoogle(endpoint, input, base) : await runHiggsfield(endpoint, input, base);
+    // Modelos cobrados por segundo (Genjutsu) não têm estimativa fixa: vale o cálculo feito no navegador.
+    if (job.credits == null && typeof meta?.credits === "number" && meta.credits >= 0 && meta.credits < 100000) job.credits = meta.credits;
 
     // A geração já foi aceita (e cobrada): uma falha ao gravar o histórico não pode virar erro.
     await saveJob(job).catch((e) => console.error("Falha ao gravar histórico:", e instanceof Error ? e.message : e));

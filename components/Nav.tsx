@@ -14,11 +14,14 @@ const TABS = [
   { href: "/avatar", label: "Avatar" },
   { href: "/genjutsu", label: "Genjutsu" },
   { href: "/frame-flow", label: "Frame Flow" },
+  { href: "/character", label: "Character" },
 ];
 
 export function Nav() {
   const path = usePathname();
   const { jobs } = useJobs();
+  // A área Character tem cabeçalho próprio.
+  if (path.startsWith("/character")) return null;
   const running = jobs.filter((j) => j.status === "queued" || j.status === "in_progress").length;
 
   return (

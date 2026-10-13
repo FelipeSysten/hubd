@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/client";
 
-type Key = "canvas" | "avatar-portraits" | "genjutsu-favs" | "frameflow-styles";
+type Key = "canvas" | "avatar-portraits" | "genjutsu-favs" | "frameflow-styles" | "characters" | "character-videos" | "character-settings";
 
 const cacheKey = (key: Key) => `hubd.state.${key}`;
 

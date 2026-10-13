@@ -1,5 +1,6 @@
 import { googleConfigured } from "@/lib/google";
 import { storageKind } from "@/lib/store";
+import { mediaStorage } from "@/lib/media";
 
 export const dynamic = "force-dynamic";
 
@@ -9,5 +10,7 @@ export async function GET() {
     higgsfield: !!process.env.HF_CREDENTIALS,
     google: googleConfigured(),
     storage: storageKind(),
+    media: mediaStorage(),
+    passwordProtected: !!process.env.APP_PASSWORD,
   });
 }

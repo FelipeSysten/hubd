@@ -13,6 +13,8 @@ type SubmitArgs = {
   input: Record<string, unknown>;
   label: string;
   prompt?: string;
+  /** Custo calculado no navegador, usado quando a API não devolve um número (cobrança por segundo). */
+  credits?: number | null;
 };
 
 /** Onde o histórico está guardado: servidor (Postgres ou arquivo local) ou só neste navegador. */
@@ -164,7 +166,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
     const r = await post<HfStatus & { credits?: number | null; job?: Job }>("/api/generate", {
       endpoint: a.endpoint,
       input: a.input,
-      meta: { module: a.module, label: a.label, prompt: a.prompt },
+      meta: { module: a.module, label: a.label, prompt: a.prompt, credits: a.credits ?? undefined },
     });
     const job =
       r.job ??

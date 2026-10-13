@@ -154,7 +154,15 @@ export async function deleteJob(id: string): Promise<void> {
 }
 
 /** Estado das telas (fluxo do Canvas, favoritos, estilos, retratos). */
-export const STATE_KEYS = new Set(["canvas", "avatar-portraits", "genjutsu-favs", "frameflow-styles"]);
+export const STATE_KEYS = new Set([
+  "canvas",
+  "avatar-portraits",
+  "genjutsu-favs",
+  "frameflow-styles",
+  "characters",
+  "character-videos",
+  "character-settings",
+]);
 
 export async function getState(key: string): Promise<unknown> {
   return (await getStore()?.getState(key)) ?? null;

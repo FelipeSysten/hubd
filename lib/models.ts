@@ -10,7 +10,8 @@ export type ModuleKey =
   | "canvas"
   | "avatar"
   | "genjutsu"
-  | "frameflow";
+  | "frameflow"
+  | "character";
 
 export const MODULE_LABELS: Record<ModuleKey, string> = {
   explorar: "Explorar",
@@ -21,6 +22,7 @@ export const MODULE_LABELS: Record<ModuleKey, string> = {
   avatar: "Avatar",
   genjutsu: "Genjutsu",
   frameflow: "Frame Flow",
+  character: "Character",
 };
 
 export const ENDPOINTS = {

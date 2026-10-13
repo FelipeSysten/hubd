@@ -492,7 +492,7 @@ export function useLatest(module: Job["module"], filter?: (j: Job) => boolean): 
 
 // ---------- Provedores e IA de texto ----------
 
-type Providers = { higgsfield: boolean; google: boolean; storage: string | null };
+export type Providers = { higgsfield: boolean; google: boolean; storage: string | null; media: "blob" | "local" | null; passwordProtected: boolean };
 let providersPromise: Promise<Providers> | null = null;
 
 /** Quais integrações o servidor tem configuradas (consultado uma vez por carregamento). */
@@ -501,7 +501,7 @@ export function useProviders(): Providers | null {
   useEffect(() => {
     providersPromise ??= fetch("/api/providers")
       .then((r) => r.json())
-      .catch(() => ({ higgsfield: false, google: false, storage: null }));
+      .catch(() => ({ higgsfield: false, google: false, storage: null, media: null, passwordProtected: false }));
     providersPromise.then(setP);
   }, []);
   return p;
