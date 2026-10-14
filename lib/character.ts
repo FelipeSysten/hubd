@@ -29,6 +29,8 @@ export type BaseVideo = {
   seconds: number;
   width: number;
   height: number;
+  /** Origem do vídeo: "Instagram", "TikTok" ou "Arquivo". */
+  source?: string;
   createdAt: number;
 };
 

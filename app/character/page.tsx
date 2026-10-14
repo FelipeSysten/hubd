@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useJobs } from "@/components/JobsProvider";
+import { BaseVideoCard } from "@/components/character/BaseVideoCard";
 import { CharacterTile } from "@/components/character/CharacterTile";
 import { CreateCharacterModal } from "@/components/character/CreateCharacterModal";
 import { publicRefs, useCharacters } from "@/components/character/CharacterProvider";
@@ -16,6 +17,8 @@ import {
   SWAP_MODELS,
   VIDEO_MAX_S,
   VIDEO_MIN_S,
+  VIEW_LABELS,
+  type BaseVideo,
 } from "@/lib/character";
 import { RESOLUTIONS, type Endpoint } from "@/lib/models";
 
@@ -28,8 +31,18 @@ const FILTERS: { key: Filter; label: string }[] = [
 ];
 const SWAP_ENDPOINTS: string[] = SWAP_MODELS.map((m) => m.endpoint);
 
+function newId() {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function sourceOf(url: string): string {
+  if (/instagram\.com|instagr\.am/i.test(url)) return "Instagram";
+  if (/tiktok\.com/i.test(url)) return "TikTok";
+  return "Link";
+}
+
 export default function CharacterStudio() {
-  const { library, loaded, settings, setSettings } = useCharacters();
+  const { library, loaded, settings, setSettings, videos, addVideo, removeVideo } = useCharacters();
   const { jobs, submit } = useJobs();
 
   const [filter, setFilter] = useState<Filter>("todos");
@@ -37,16 +50,20 @@ export default function CharacterStudio() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  // Vídeos base: a lista vem da biblioteca (sincronizada). Clicar marca/desmarca.
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const video: BaseVideo | null = videos.find((v) => v.id === selectedVideoId) ?? null;
+  const videoUrl = video?.url ?? null;
   const duration = useVideoDuration(videoUrl);
+
   const [link, setLink] = useState("");
   const [preview, setPreview] = useState<(LinkPreview & { url: string }) | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
+
   const [customPrompt, setCustomPrompt] = useState(false);
   const [prompt, setPrompt] = useState("");
-
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastJobId, setLastJobId] = useState<string | null>(null);
@@ -70,6 +87,12 @@ export default function CharacterStudio() {
   const effectivePrompt = customPrompt ? prompt : "";
   const estimateInput = character && videoUrl ? swapInput(videoUrl, referenceImages(character), effectivePrompt, settings.resolution) : null;
 
+  function addBaseVideo(url: string, name: string, source: string, extra: Partial<BaseVideo> = {}) {
+    const v: BaseVideo = { id: newId(), name, url, source, seconds: 0, width: 0, height: 0, createdAt: Date.now(), ...extra };
+    addVideo(v);
+    setSelectedVideoId(v.id);
+  }
+
   async function previewLink() {
     setImportError(null);
     setPreviewing(true);
@@ -89,8 +112,8 @@ export default function CharacterStudio() {
     setImportError(null);
     setImporting(true);
     try {
-      const v = await post<{ url: string }>("/api/media/import", { url: preview.url });
-      setVideoUrl(v.url);
+      const v = await post<{ url: string; seconds: number; width: number; height: number }>("/api/media/import", { url: preview.url });
+      addBaseVideo(v.url, preview.title, sourceOf(preview.url), { seconds: v.seconds, width: v.width, height: v.height });
       setPreview(null);
       setLink("");
     } catch (e) {
@@ -134,9 +157,38 @@ export default function CharacterStudio() {
           <div className="ch-col-head">
             <span className="ch-num">1</span>
             <span className="ch-col-title">Personagem</span>
-            <span className="ch-col-hint">clique para escolher</span>
+            <span className="ch-col-hint">
+              {character ? "1 escolhido · " : "clique para escolher"}
+              {character && (
+                <button type="button" className="ch-linkbtn" onClick={() => setSelectedId(null)}>
+                  limpar
+                </button>
+              )}
+            </span>
           </div>
           <div className="ch-col-body">
+            {character && (
+              <div className="ch-selected">
+                <div className="row between">
+                  <strong style={{ fontSize: 15 }}>{character.name}</strong>
+                  <Link href="/character/personagens" className="ch-link">
+                    ficha
+                  </Link>
+                </div>
+                {referenceImages(character).length ? (
+                  <div className="ch-views">
+                    {character.images.map((img) => (
+                      <figure key={img.url}>
+                        <img src={img.url} alt={`${character.name} · ${VIEW_LABELS[img.view]}`} />
+                        <figcaption>{VIEW_LABELS[img.view]}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="ch-hintline">Este personagem ainda não tem imagens.</span>
+                )}
+              </div>
+            )}
             <input className="ch-search" placeholder="Buscar personagem" value={q} onChange={(e) => setQ(e.target.value)} />
             <div className="ch-chips">
               {FILTERS.map((f) => (
@@ -151,7 +203,7 @@ export default function CharacterStudio() {
                 Criar
               </button>
               {list.map((c) => (
-                <CharacterTile key={c.id} c={c} selected={c.id === selectedId} onClick={() => setSelectedId(c.id)} />
+                <CharacterTile key={c.id} c={c} selected={c.id === selectedId} onClick={() => setSelectedId(c.id === selectedId ? null : c.id)} />
               ))}
             </div>
             {loaded && !library.characters.length && (
@@ -165,9 +217,24 @@ export default function CharacterStudio() {
           <div className="ch-col-head">
             <span className="ch-num">2</span>
             <span className="ch-col-title">Vídeo base</span>
-            <span className="ch-col-hint">arraste para a janela</span>
+            <span className="ch-col-hint">
+              {video ? "1 escolhido · " : "arraste para a janela"}
+              {video && (
+                <button type="button" className="ch-linkbtn" onClick={() => setSelectedVideoId(null)}>
+                  limpar
+                </button>
+              )}
+            </span>
           </div>
           <div className="ch-col-body">
+            <UploadBox
+              kind="video"
+              value={null}
+              onChange={(u) => u && addBaseVideo(u, "Vídeo enviado", "Arquivo")}
+              label={`Solte ou escolha vídeo de ${VIDEO_MIN_S} a ${VIDEO_MAX_S} s`}
+              hint="MP4, até 200 MB"
+              height={130}
+            />
             <div className="ch-linkrow">
               <input
                 className="ch-input"
@@ -205,16 +272,26 @@ export default function CharacterStudio() {
                 </div>
               </div>
             )}
-            <UploadBox
-              kind="video"
-              value={videoUrl}
-              onChange={setVideoUrl}
-              label={`Solte ou escolha vídeo de ${VIDEO_MIN_S} a ${VIDEO_MAX_S} s`}
-              hint="MP4, até 200 MB"
-              height={260}
-            />
-            {videoUrl && (
-              <button type="button" className="ch-btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={() => downloadUrl(videoUrl, "video-base.mp4")}>
+
+            {videos.length > 0 && (
+              <div className="ch-vids">
+                {videos.map((v) => (
+                  <BaseVideoCard
+                    key={v.id}
+                    v={v}
+                    selected={v.id === selectedVideoId}
+                    onToggle={() => setSelectedVideoId((cur) => (cur === v.id ? null : v.id))}
+                    onRemove={() => {
+                      removeVideo(v.id);
+                      if (selectedVideoId === v.id) setSelectedVideoId(null);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {video && (
+              <button type="button" className="ch-btn ghost sm" style={{ alignSelf: "flex-start" }} onClick={() => downloadUrl(video.url, `${video.name.slice(0, 40) || "video-base"}.mp4`)}>
                 ↓ Baixar arquivo
               </button>
             )}
@@ -266,7 +343,6 @@ export default function CharacterStudio() {
                 <span className="ch-hintline">Desligado: usa o padrão testado (mantém movimento, câmera, fundo e luz).</span>
               )}
             </div>
-            {character && !referenceImages(character).length && <ErrorNote error="Este personagem ainda não tem imagens." />}
           </div>
           <div className="ch-col-foot">
             <ErrorNote error={error} />

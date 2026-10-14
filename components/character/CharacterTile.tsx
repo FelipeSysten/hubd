@@ -8,6 +8,7 @@ export function CharacterTile({ c, selected, onClick, big }: { c: Character; sel
   return (
     <button type="button" className={`ch-char ${selected ? "on" : ""} ${big ? "big" : ""}`} onClick={onClick} title={c.name}>
       {cover ? <img src={cover} alt="" loading="lazy" /> : <span className="ph">?</span>}
+      {selected && <span className="ch-check">✓</span>}
       <span className="nm">
         {c.name}
         <span className="sub">
