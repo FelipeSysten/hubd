@@ -129,10 +129,16 @@ export function cardRequest(endpoint: Endpoint, prompt: string, refs: string[] =
   return { endpoint, input: { prompt, aspect_ratio: "3:4", resolution: "720p", batch_size: 1, ...(refs[0] ? { image_reference_url: refs[0] } : {}) } };
 }
 
-/** Imagens enviadas como referência na troca (card primeiro; a API aceita até 8). */
+/** As 4 variações de fundo amarelo do personagem (card, frente, 3/4 direita, perfil), na ordem da tela. Fotos enviadas ficam de fora. */
+export const STUDIO_VIEWS: CharacterView[] = ["card", "front", "three-quarter", "profile"];
+
+export function studioImages(c: Character): CharacterImage[] {
+  return STUDIO_VIEWS.map((view) => c.images.find((i) => i.view === view)).filter((i): i is CharacterImage => !!i);
+}
+
+/** Referências enviadas na troca: as variações do personagem (a API aceita até 8). */
 export function referenceImages(c: Character): string[] {
-  const order: CharacterView[] = ["card", "upload", "front", "three-quarter", "profile"];
-  return [...c.images].sort((a, b) => order.indexOf(a.view) - order.indexOf(b.view)).map((i) => i.url).slice(0, 8);
+  return studioImages(c).map((i) => i.url).slice(0, 8);
 }
 
 /** Input da troca de personagem: vídeo de origem, referências do personagem e prompt (vazio = padrão testado). */

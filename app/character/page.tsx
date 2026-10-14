@@ -12,6 +12,7 @@ import { downloadUrl, post } from "@/lib/client";
 import type { LinkPreview } from "@/lib/download";
 import {
   referenceImages,
+  studioImages,
   swapCredits,
   swapInput,
   SWAP_MODELS,
@@ -175,9 +176,9 @@ export default function CharacterStudio() {
                     ficha
                   </Link>
                 </div>
-                {referenceImages(character).length ? (
+                {studioImages(character).length ? (
                   <div className="ch-views">
-                    {character.images.map((img) => (
+                    {studioImages(character).map((img) => (
                       <figure key={img.url}>
                         <img src={img.url} alt={`${character.name} · ${VIEW_LABELS[img.view]}`} />
                         <figcaption>{VIEW_LABELS[img.view]}</figcaption>
